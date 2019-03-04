@@ -1,0 +1,4 @@
+this file used for any write function to read from this file.
+(function() {
+    alert("I am an IIFE!");
+}());

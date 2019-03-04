@@ -1,0 +1,20 @@
+{
+  "name": "shieldfy-nodejs-client",
+  "version": "0.1.0",
+  "description": "shieldfy nodejs official sdk",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "author": "Shieldfy.io",
+  "license": "SCL",
+  "dependencies": {
+    "@mongoosejs/async-hooks": "0.0.1",
+    "busboy": "^0.3.0",
+    "crypto-js": "^3.1.9-1",
+    "request": "^2.88.0",
+    "require-in-the-middle": "^3.1.0",
+    "shimmer": "^1.2.1",
+    "uuid": "^3.3.2"
+  }
+}
