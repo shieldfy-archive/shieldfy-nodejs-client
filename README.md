@@ -1,4 +1,4 @@
-# Shieldfy NodeJs SDK
+# Shieldfy NodeJs SDK - Beta
 
 This is the official NodeJs SDK for Shieldfy (shieldfy.io) https://shieldfy.io
 
