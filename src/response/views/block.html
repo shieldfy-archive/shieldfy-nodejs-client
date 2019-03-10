@@ -1,43 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
         <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Access Denied</title>
-        <style>
-            .well {
-                border: 1px solid #e3e3e3;
-                background-color: rgba(68, 70, 79, 0.5);
-                border-color: #1c1d1f;
-                color: #fff;
-            }
-
-            body {
-                background: #2f323b;
-            }
-        </style>
     </head>
-    <body>
-        <div class="container">
-            <div class="row">
-                <div class="col-sm-8 col-sm-offset-2">
-                    <div class="well" style="margin-top:80px;padding:40px;">
-                        <div class="row">
-                            <div class="col-sm-4">
-                                <img class="img-responsive" src="https://app-dev.shieldfy.co/img/logoi.png" alt="">
-                            </div>
-                            <div class="col-sm-8">
-                                <h1>Whooops!</h1>
-                                <h4>Your request blocked for security reasons</h4>
-                                <p>if you believe that your request shouldn't be blocked contact the administrator <br /><br /><br /> Incident ID : <id>{incidentId}</id> </p>
-                                <hr/>Protected By <a href="https://shieldfy.io" target="_blank">Shieldfy</a> &trade; Web Shield 
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    <body style="background: #2f323b;font-family:sans-serif;">
+        <div style="text-align:center;color:#fff;">
+            <img style="width:150px;" src="https://cloud.shieldfy.io/img/logoi.png" alt="">
+            <h1>Whooops!</h1>
+            <p>Your request blocked for security reasons</p>
+            <p>if you believe that your request shouldn't be blocked contact the administrator <br /><br /><br /> Incident ID : <id>{incidentId}</id> </p>
+            <hr/>Protected By <a style="color:#fff" href="https://shieldfy.io" target="_blank">Shieldfy</a> &trade; Web Shield 
         </div>
     </body>
 </html>
