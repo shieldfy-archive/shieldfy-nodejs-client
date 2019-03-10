@@ -41,7 +41,9 @@ const Session = function(Client){
 
 
                     res.on('finish',function() {
-                        Client._currentRequest.setRes(res);
+                        try{
+                            Client._currentRequest.setRes(res);
+                        }catch(e) {}
                         
                         // Client._http._api.trigger('session/step', {
                         //     sessionId: Client._sessionId,
@@ -70,14 +72,16 @@ const Session = function(Client){
 
         Shimmer.wrap(exports && exports.ServerResponse && exports.ServerResponse.prototype, 'writeHead', function (original) {
             return function () {
-                
-                if(Client._currentRequest.isDanger()){
-                    arguments[0] = '403';
-                    arguments[1] = {
-                        'Content-Type': 'text/html',
-                        'Transfer-Encoding': 'chunked'
-                    };
-                }
+                try{
+
+                    if(Client._currentRequest.isDanger()){
+                        arguments[0] = '403';
+                        arguments[1] = {
+                            'Content-Type': 'text/html',
+                            'Transfer-Encoding': 'chunked'
+                        };
+                    }
+                }catch(e){}
     
     
                 var returned = original.apply(this, arguments);
@@ -105,14 +109,16 @@ const Session = function(Client){
 
         Shimmer.wrap(exports && exports.ServerResponse && exports.ServerResponse.prototype, 'end', function (original) {
             return function () {
-                if(Client._currentRequest.isDanger()){
-                    try {
-                        Client._currentRequest._$res.setHeader('Transfer-Encoding','chunked');
-                        Client._currentRequest._$res.setHeader('Content-Type','text/html');
-                    }catch (e) {}
-                    arguments[0] = Client._response.block();
-                }
-                Client._currentRequest.end();
+                try {
+                    if(Client._currentRequest.isDanger()){
+                        try {
+                            Client._currentRequest._$res.setHeader('Transfer-Encoding','chunked');
+                            Client._currentRequest._$res.setHeader('Content-Type','text/html');
+                        }catch (e) {}
+                        arguments[0] = Client._response.block();
+                    }
+                    Client._currentRequest.end();
+                }catch(e) {}
                 var returned = original.apply(this, arguments);
                 return returned;
             }

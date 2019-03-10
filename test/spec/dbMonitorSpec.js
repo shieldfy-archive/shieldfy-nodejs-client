@@ -4,6 +4,12 @@ var server = require('./expressServer')
 
 describe("mongoDB request",function () {
     
+    beforeAll(function(done) {
+        setTimeout(() => {
+            done();
+        }, 2000);
+    });
+    
     it("should be pass",function (done) {
         request.post('http://localhost:3000/db/mongo', {form:{userName: "user", password: "password"}}, function(err,res,body){
             expect(body).toEqual("hello world")
@@ -21,7 +27,13 @@ describe("mongoDB request",function () {
 })
 
 describe("mysql request",function () {
-    
+
+    beforeAll(function(done) {
+        setTimeout(() => {
+            done();
+        }, 2000);
+    });
+
     it("should be pass",function (done) {
         request.post('http://localhost:3000/db/mysql', {form:{userName: 'user', password: 'password'}}, function(err,res,body){
             expect(body).toEqual("hello world")

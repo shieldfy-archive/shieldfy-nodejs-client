@@ -57,8 +57,9 @@ Client.prototype.start = function(opts)
     
     this._monitors = new Monitors(this);
 
+    this._jury = new Jury({});
     // send to api that is a new installation
-    new Install(this, function(self, rules){
+    this._install= new Install(this, function(self, rules){
         self._jury = new Jury(rules);
     });
 
@@ -68,19 +69,21 @@ Client.prototype.start = function(opts)
 
 }
 
-Client.prototype.sendToJail = function(monitor, result, codeContent, lineNumber, path, stackTrace)
+Client.prototype.sendToJail = function()
 {
-
     if(this._currentRequest._score >= 70){
         this._currentRequest.setDanger(true);
     }
 
     let incidentId = uuid.v4();
-    this._response.setIncidentId(incidentId);
+    this._response.setIncidentId(incidentId);    
+}
 
+Client.prototype.reportThreat = function(monitor, result, codeInfo)
+{
     // send threat to the api
     this._http._api.trigger('session/threat', {
-        incidentId: incidentId,
+        incidentId: this._response.valueIncidentId,
         host: this._currentRequest._headers.host,
         sessionId: this._sessionId,
         monitor: monitor,
@@ -104,16 +107,15 @@ Client.prototype.sendToJail = function(monitor, result, codeContent, lineNumber,
         code: {
             stack: [],
             code: {
-                file: path,
-                line: lineNumber,
-                content: codeContent
+                file: codeInfo.path,
+                line: codeInfo.lineNumber,
+                content: codeInfo.code
             }
         },
         response: parseScore(result.score) === 'high'? 'block' : 'pass',
         lang: 'nodejs'
     });
 }
-
 function parseScore(score = 0)
 {
     if (score >= 70) {
