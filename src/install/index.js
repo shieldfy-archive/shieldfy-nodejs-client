@@ -17,9 +17,11 @@ Install.prototype.run = function(client, callback = false)
         }, 
         (body) => {
             if (body.status == "error") {
+                console.log('failed');
                 // try to redownload rules
                 this.run(client, callback);
             } else {
+                console.log('success');
                 var allRules = body.data.rules;
         
                 // Decode the rules and parse it
