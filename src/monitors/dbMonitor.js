@@ -104,12 +104,16 @@ DBMonitor.prototype.mongoDB = function(Client, exports,name){
                         let paramValue = requestParams[param];
                         
                         if(value.indexOf(paramValue) !== -1){
-                            //Matched YAY
-                            paramValue = new Normalizer(value).run();
                             
+                            //Matched YAY
+                            paramValue = new Normalizer(paramValue).run();
+                            
+                          
                             let Judge = Client._jury.use('db','nosqli');
                             let result = Judge.execute(paramValue);
+
                             if(result){
+                                console.log(result);
                                 Client._currentRequest._score += result.score;
                                 Client.sendToJail();
                                 var stack = new Error().stack;
@@ -149,7 +153,7 @@ function wrapQuery(Client, connection)
                             let paramValue = requestParams[param];
                             if(query.indexOf(paramValue) !== -1){
                                 //Matched YAY
-                                paramValue = new Normalizer(query).run();
+                                paramValue = new Normalizer(paramValue).run();
                                 let Judge = Client._jury.use('db','sqli');
                                 let result = Judge.execute(paramValue);
                                 if(result){                      
@@ -211,7 +215,7 @@ function wrapExecute(Client, connection)
                         
                         if(query.indexOf(paramValue) !== -1){
                             //Matched YAY
-                            paramValue = new Normalizer(query).run();
+                            paramValue = new Normalizer(paramValue).run();
                             let Judge = Client._jury.use('db','sqli');
                             let result = Judge.execute(paramValue);
                             if(result){                      
