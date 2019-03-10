@@ -2,7 +2,7 @@ const Hook = require('require-in-the-middle');
 const Shimmer = require('shimmer');
 const Normalizer = require('../normalizer');
 const StackCollector = require('../stackCollector');
-const mongooseAsyncHooks = require('@mongoosejs/async-hooks');
+const mongooseAsyncHooks = require('../asyncHooks/mongoose');
 
 const DBMonitor = function()
 {
@@ -74,8 +74,11 @@ DBMonitor.prototype.mongoose = function(Client, exports, name){
 
     Shimmer.wrap(exports, 'model',function(original) {
         return function (schemeName, schemeObj) {
+            
             // add this plugin to the scheme to handle the conflict
-            schemeObj.plugin(mongooseAsyncHooks);
+            if(typeof schemeObj !== "undefined" ){
+                schemeObj.plugin(mongooseAsyncHooks);
+            }
 
             var connection = original.apply(this, arguments);
             return connection;

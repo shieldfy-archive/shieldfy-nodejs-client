@@ -1,6 +1,6 @@
 const Hook = require('require-in-the-middle');
 const Shimmer = require('shimmer');
-const Async_hooks = require('./async_hooks');
+const Async_hooks = require('./asyncHooks/core');
 const Request = require('./request');
 const Normalizer = require('./normalizer');
 
@@ -17,27 +17,7 @@ const Session = function(Client){
                 if (event === 'request') {
                     Client._currentRequest = new Request()
 
-                    Client._currentRequest.start(req,res,()=>{
-
-                        // request monitor and apply the rules on incoming requests after extract the payload of the request
-                        // let requestParams = Client._currentRequest.getParam();
-    
-                        // for(let param in requestParams){
-    
-                        //     let paramValue = new Normalizer(requestParams[param]).run();
-
-                        //     //Matched YAY
-                        //     let Judge = Client._jury.use('view');
-                        //     let result = Judge.execute(paramValue);
-                            
-                        //     if(result){
-                        //         Client._currentRequest._score += result;
-                        //         Client.sendToJail('request',result);
-                        //     }
-                                
-            
-                        // }
-                    });
+                    Client._currentRequest.start(req,res);
 
 
                     res.on('finish',function() {
@@ -45,6 +25,9 @@ const Session = function(Client){
                             Client._currentRequest.setRes(res);
                         }catch(e) {}
                         
+                        /**
+                         * Disable session step for now to optimize the execution
+                         */
                         // Client._http._api.trigger('session/step', {
                         //     sessionId: Client._sessionId,
                         //     host: Client._currentRequest._headers.host,
