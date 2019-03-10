@@ -58,8 +58,9 @@ Client.prototype.start = function(opts)
     this._monitors = new Monitors(this);
 
     this._jury = new Jury({});
+    
     // send to api that is a new installation
-    this._install= new Install(this, function(self, rules){
+    Install(this, function(self, rules){
         self._jury = new Jury(rules);
     });
 

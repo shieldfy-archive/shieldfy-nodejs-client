@@ -28,7 +28,7 @@ Install.prototype.run = function(client, callback = false)
                 }
             }
     
-            if (callback != false) {
+            if (callback !== false) {
                 callback(client, allRules);
             }
         }
@@ -36,4 +36,6 @@ Install.prototype.run = function(client, callback = false)
 }
 
 
-module.exports = Install;
+module.exports = function(client, callback){
+    return new Install(client, callback);
+}
