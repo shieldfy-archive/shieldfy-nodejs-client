@@ -24,11 +24,9 @@ memoryMonitor.prototype.run = function(Client)
                             let paramValue = requestParams[param];
                             
                             if(value.indexOf(paramValue) !== -1){
-                                console.log('Judge');
                                 let Judge = Client._jury.use('memory');
                                 let result = Judge.execute(paramValue);
                                 if(result){
-                                    console.log('Guilty');
                                     Client._currentRequest._score += result.score;
                                     Client.sendToJail();
                                     var stack = new Error().stack;
