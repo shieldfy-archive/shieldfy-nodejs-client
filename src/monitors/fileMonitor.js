@@ -148,6 +148,7 @@ function isParamInPath(param, path){
 
             //Windows supports both back and forward slashes as path seperators
             paramArr = param.split(/\/|\\/);
+            pathArr = path.split(/\/|\\/);
 
         }
         else{
