@@ -31,8 +31,10 @@ const Session = function(Client){
 
         Shimmer.wrap(exports && exports.ServerResponse && exports.ServerResponse.prototype, 'setHeader', function (original) {
             return function (key,value) {
-                if( Client._currentRequest.isDanger() &&  key == 'Content-Length'){
-                    arguments[1] = String(Client._response.block().length); 
+                if ( Client._currentRequest ) {
+                    if( Client._currentRequest.isDanger() &&  key == 'Content-Length'){
+                        arguments[1] = String(Client._response.block().length); 
+                    }
                 }
                 
                 var returned = original.apply(this, arguments);
