@@ -27,7 +27,7 @@ function Request()
     
 }
 
-Request.prototype.start = function(req,res,cb)
+Request.prototype.start = function(req, res, cb = false)
 {
     this._$res = res;
     this._$req = req;
@@ -44,7 +44,9 @@ Request.prototype.start = function(req,res,cb)
     if(req && req.headers["content-type"])
     {
         this._getPostData(req,() => {
-            cb()
+            if(cb){
+                cb();
+            }
         })
     }
 
