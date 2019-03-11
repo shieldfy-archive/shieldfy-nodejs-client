@@ -136,11 +136,11 @@ fileMonitor.prototype.handleFile = function(Client,exports, name, version)
  */
 function isParamInPath(param, path){
 
-    var MATCHED = false;
+    let MATCHED = false;
 
     if(typeof(param) == "string" && typeof(path) == "string"){
 
-        var paramArr, pathArr;
+        let paramArr, pathArr;
         
         //We split path into pieces by splitting on path seperators ("/" and "\")
 
@@ -182,7 +182,6 @@ function isParamInPath(param, path){
             };
         });
 
-        return MATCHED;
     }
 
     return MATCHED;
