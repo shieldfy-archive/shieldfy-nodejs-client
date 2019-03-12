@@ -118,6 +118,75 @@ fileMonitor.prototype.handleFile = function(Client,exports, name, version)
     return exports;
 }
 
+/**
+ * @description Tries to detect whether a parameter is controlling the path provided to an fs function
+ * .
+ * .
+ * .
+ * @param {String} param the parameter provided by the user
+ * @param {String} path the path provided to the fs function
+ * .
+ * .
+ * @TODO :
+ *  - Detect base64 encoded params (base64 decode then check range of charCode, 
+ *    if all is inside UTF-8 then it was probably encoded).
+ * 
+ *  - 
+ * .
+ */
+function isParamInPath(param, path){
+
+    let MATCHED = false;
+
+    if(typeof(param) == "string" && typeof(path) == "string"){
+
+        let paramArr, pathArr;
+        
+        //We split path into pieces by splitting on path seperators ("/" and "\")
+
+        if(process.platform == "win32"){
+
+            //Windows supports both back and forward slashes as path seperators
+            paramArr = param.split(/\/|\\/);
+            pathArr = path.split(/\/|\\/);
+
+        }
+        else{
+
+            paramArr = param.split('/');
+            pathArr = path.split('/');
+
+        }
+
+        //splitting on slashes can lead to empty strings '' in the array if the first character is a slash, 
+        //so we remove it
+        paramArr = paramArr.filter(dir => dir != '');
+        pathArr = pathArr.filter(dir => dir != '');
+
+        //Ex: path=/etc/passwd , param = /etc/passwd
+        if(path.indexOf(param) != -1){
+            MATCHED = true;
+        };
+
+        //Ex: path = /etc/passwd , param = /something/somethingelse/etc/passwd
+        paramArr.forEach(param => {
+            if(pathArr.includes(param)){
+                MATCHED = true;
+            };
+        });
+
+        //Ex: path=/etc/passwd , param=...someotherdata...etc...passwd...moredata
+        pathArr.forEach(dir => {
+            if(param.indexOf(dir) != -1){
+                MATCHED = true
+            };
+        });
+
+    }
+
+    return MATCHED;
+}
+
 function wrapRead(path, Client)
 {
     if (Client._currentRequest) {
@@ -130,7 +199,7 @@ function wrapRead(path, Client)
                 // apply file(target: parameters) rules on request parameter
                 for(let param in requestParams){
                     let paramValue = requestParams[param]
-                    if(path.indexOf(paramValue) !== -1){
+                    if(isParamInPath(paramValue, path)){
                         //Matched YAY
                         paramValue = new Normalizer(path).run();
                         let JudgeParameters = Client._jury.use('files','PARAMETERS');
@@ -172,7 +241,7 @@ function wrapWrite(path, data, Client){
             allFiles.forEach(file => {
                 // apply rule to file name
                 let paramValue = file['originalname']
-                if(path.indexOf(paramValue) !== -1){
+                if(isParamInPath(paramValue, path)){
                     //Matched YAY
                     paramValue = new Normalizer(path).run();
                     let JudgeParameters = Client._jury.use('files','FILENAME');
