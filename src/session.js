@@ -2,8 +2,6 @@ const Hook = require('require-in-the-middle');
 const Shimmer = require('shimmer');
 const Async_hooks = require('./asyncHooks/core');
 const Request = require('./request');
-const Normalizer = require('./normalizer');
-
 
 const Session = function(Client){
 

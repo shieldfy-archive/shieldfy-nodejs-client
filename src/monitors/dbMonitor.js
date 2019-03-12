@@ -113,7 +113,6 @@ DBMonitor.prototype.mongoDB = function(Client, exports,name){
                             let result = Judge.execute(paramValue);
 
                             if(result){
-                                console.log(result);
                                 Client._currentRequest._score += result.score;
                                 Client.sendToJail();
                                 var stack = new Error().stack;
