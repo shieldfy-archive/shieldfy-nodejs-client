@@ -38,8 +38,15 @@ ApiClient.prototype.request = function(url, body, callback = false)
 
     function callbackRequest(error, response, body) {
         if (error) {
+            var err= {
+                "status": 'error'
+            }
+            if (callback) {
+                callback(err);
+            }
             return false;
         }
+
         // check the status response of code error
         var statusCodeError = [404, 500];
         if (statusCodeError.includes(response.statusCode)) {

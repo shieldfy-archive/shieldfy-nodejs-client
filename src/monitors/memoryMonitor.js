@@ -12,22 +12,35 @@ memoryMonitor.prototype.run = function(Client)
 {
     Shimmer.wrap(Buffer, 'from', function (original) {
         return function (buff) {
+            if (Client._currentRequest) {
+                try{
+                    let value = buff;
+                    let requestParams = Client._currentRequest.getParam();
+                   
+                    if(!(Object.keys(requestParams).length === 0 && requestParams.constructor === Object)){
+                        
+                        for(let param in requestParams){
+                           
+                            let paramValue = requestParams[param];
+                            
+                            if(paramValue === value){
+                                
+                                let Judge = Client._jury.use('memory');
+                                let result = Judge.execute(paramValue);
 
-            // add try beacuse this function is used before the rules get downloaded
-            try{
-                let Judge = Client._jury.use('memory');
-                let result = Judge.execute(buff);
-                if(result){
-                    var stack = new Error().stack;
-                    var codeInfo= StackCollector.stackCollector(stack);
-                    var vulnerableLine= StackCollector.getTheVulnerableLine(codeInfo);
-                    var path= vulnerableLine[1];
-                    var lineNumber= parseInt(vulnerableLine[2]);
-                    var codeContent= StackCollector.lineCollector(path, lineNumber);
-                    Client._currentRequest._score += result.score;
-                    Client.sendToJail('memory', result, codeContent, lineNumber, path, codeInfo);
-                }
-            }catch(e){}
+                                if(result){
+                                    Client._currentRequest._score += result.score;
+                                    Client.sendToJail();
+                                    var stack = new Error().stack;
+                                    new StackCollector(stack).parse(function(codeInfo){
+                                        Client.reportThreat('memory', result, codeInfo);
+                                    });
+                                }
+                            }
+                        }
+                    }
+                }catch(e){}
+            }
             var returned = original.apply(this, arguments)
             return returned;
         };

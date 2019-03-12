@@ -2,6 +2,12 @@ var request = require('request');
 var server = require('./expressServer')
 
 describe("execution request",function () {
+
+    beforeAll(function(done) {
+        setTimeout(() => {
+            done();
+        }, 2000);
+    });
     
     it("should be pass",function (done) {
         request.post('http://localhost:3000/execution', {form:{key:'value'}}, function(err,res,body){

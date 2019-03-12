@@ -19,7 +19,7 @@ app.post('/db/mongo', function (req, res) {
     const url = 'mongodb://localhost:27017';
 
     // Database Name
-    const dbName = 'myproject';
+    const dbName = 'my_database';
 
     // Create a new MongoClient
     const client = new MongoClient(url);
@@ -27,7 +27,7 @@ app.post('/db/mongo', function (req, res) {
     // Use connect method to connect to the Server
     client.connect(function(err) {
         const db = client.db(dbName);
-        const collection = db.collection('documents');
+        const collection = db.collection('users');
         // Find some documents
         collection.find( req.body ).toArray(function(err, docs) {
 

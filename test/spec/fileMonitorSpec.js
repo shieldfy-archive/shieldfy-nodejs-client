@@ -3,6 +3,12 @@ var server = require('./expressServer')
 var fs = require('fs');
 
 describe("readFile request",function () {
+
+    beforeAll(function(done) {
+        setTimeout(() => {
+            done();
+        }, 2000);
+    });
     
     it("should be pass",function (done) {
         request.post('http://localhost:3000/file/readFile', {form:{key:'testFile'}}, function(err,res,body){
@@ -21,6 +27,12 @@ describe("readFile request",function () {
 })
 
 describe("writeFile request",function () {
+
+    beforeAll(function(done) {
+        setTimeout(() => {
+            done();
+        }, 2000);
+    });
     
     it("should be pass",function (done) {
         request.post('http://localhost:3000/file/writeFile'
@@ -41,6 +53,12 @@ describe("writeFile request",function () {
 })
 
 describe("readFileSync request",function () {
+
+    beforeAll(function(done) {
+        setTimeout(() => {
+            done();
+        }, 2000);
+    });
     
     it("should be pass",function (done) {
         request.post('http://localhost:3000/file/readFileSync', {form:{key:'testFile.txt'}}, function(err,res,body){
@@ -59,6 +77,12 @@ describe("readFileSync request",function () {
 })
 
 describe("writeFileSync request",function () {
+
+    beforeAll(function(done) {
+        setTimeout(() => {
+            done();
+        }, 2000);
+    });
     
     it("should be pass",function (done) {
         request.post('http://localhost:3000/file/writeFileSync'
@@ -79,6 +103,12 @@ describe("writeFileSync request",function () {
 })
 
 describe("createReadStream request",function () {
+
+    beforeAll(function(done) {
+        setTimeout(() => {
+            done();
+        }, 2000);
+    });
     
     it("should be pass",function (done) {
         request.post('http://localhost:3000/file/createReadStream', {form:{key:'testFile.txt'}}, function(err,res,body){
@@ -97,6 +127,12 @@ describe("createReadStream request",function () {
 })
 
 describe("createWriteStream request",function () {
+
+    beforeAll(function(done) {
+        setTimeout(() => {
+            done();
+        }, 2000);
+    });
     
     it("should be pass",function (done) {
         request.post('http://localhost:3000/file/createWriteStream'
