@@ -4,25 +4,23 @@ function Config() {
       "endPoint": 'https://api.shieldfy.com/v2/',
       "appKey": null,
       "appSecret": null,
+      "signature": null,
       "debug": false,
       "action": "block",
       "blockPage": null,
     };
 }
 
-Config.prototype.setConfig=function (opts) {
-
-    if (process.env.appKey !== undefined && process.env.appSecret !== undefined) {
-
-        var EnvOpts={
+Config.prototype.setConfig = function (opts)
+{
+    if ( process.env.appKey !== undefined && process.env.appSecret !== undefined ) {
+        var EnvOpts = {
             'appKey':process.env.appKey,
             'appSecret':process.env.appSecret,
             'debug':process.env.debug
-        }
-
+        };
         Object.assign(this._defaults,EnvOpts);
     }
-
     Object.assign(this._defaults,opts);
     return this._defaults;
 }

@@ -2,6 +2,7 @@ const Hook = require('require-in-the-middle');
 const Shimmer = require('shimmer');
 const Async_hooks = require('./asyncHooks/core');
 const Request = require('./request');
+const CryptoJS = require("crypto-js");
 
 const Session = function(Client){
 
@@ -15,6 +16,7 @@ const Session = function(Client){
                 if (event === 'request') {
                     Client._currentRequest = new Request()
                     Client._currentRequest.start(req,res);
+                    shieldfyHeaders(Client);
 
                     res.on('finish',function() {
                         try{
@@ -91,5 +93,27 @@ const Session = function(Client){
         
 }
 
+function shieldfyHeaders(Client)
+{
+    if ( Client._currentRequest ) {
+        Client._currentRequest._$res.setHeader('X-Web-Shield', 'ShieldfyWebShield');
+        if (Client._config.signature) {
+            Client._currentRequest._$res.setHeader('X-Shieldfy-Signature', Client._config.signature); 
+        } else {
+            Client._currentRequest._$res.setHeader('X-Shieldfy-Signature', getSignature(Client)); 
+        }
+    }
+    return ;
+}
+
+function getSignature(Client)
+{
+    if (Client._config.appKey && Client._config.appSecret) {
+        Client._config.signature = CryptoJS.HmacSHA256(Client._config.appKey, Client._config.appSecret);
+    } else {
+        Client._config.signature = "invalid signature";
+    }
+    return Client._config.signature;
+}
 
 module.exports = Session;
