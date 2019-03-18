@@ -40,14 +40,16 @@ Request.prototype.start = function(req, res, cb = false)
     this._query = req ? url.parse(req.url, true).query : '';
     this._ip = req ? this.getIp(req):'';
 
-    //extract files and body of data from the request
-    if(req && req.headers["content-type"])
-    {
-        this._getPostData(req,() => {
-            if(cb){
-                cb();
-            }
-        })
+    if (req.method != "GET") {
+        //extract files and body of data from the request
+        if(req && req.headers["content-type"])
+        {
+            this._getPostData(req,() => {
+                if(cb){
+                    cb();
+                }
+            })
+        }
     }
 
 }
@@ -170,13 +172,11 @@ Request.prototype._preparePostData = function(req,cb)
 
         if(req.headers["content-type"].indexOf("application/json") !== -1){
             // case content-type is application/json
-            cb(JSON.parse(postData));
+            cb(postData);
         }else{
             // case content-type is application/x-www-form-urlencoded
             cb(parse(postData));
         }
-        // cb(parse(postData));
-        // cb(JSON.parse(postData));
     });
 }
 
