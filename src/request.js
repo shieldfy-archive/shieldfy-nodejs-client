@@ -161,7 +161,7 @@ Request.prototype._prepareFormData = function(req,cb)
  */
 Request.prototype._preparePostData = function(req,cb)
 {
-    let postData = '[]';
+    let postData = '';
     req.on('data', function(chunk)
     {
         postData += chunk.toString();
@@ -171,7 +171,7 @@ Request.prototype._preparePostData = function(req,cb)
     {
         if ( req.headers["content-type"].indexOf("application/json") !== -1 ) {
             // case content-type is application/json
-            if (postData) {
+            if (postData) { //if the postData is empty don't proceed
                 try {
                     cb(JSON.parse(postData));
                 } catch (e) {
