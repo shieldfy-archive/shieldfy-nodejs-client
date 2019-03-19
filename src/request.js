@@ -161,7 +161,7 @@ Request.prototype._prepareFormData = function(req,cb)
  */
 Request.prototype._preparePostData = function(req,cb)
 {
-    let postData = '';
+    let postData = '[]';
     req.on('data', function(chunk)
     {
         postData += chunk.toString();
