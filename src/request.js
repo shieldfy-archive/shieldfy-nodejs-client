@@ -161,7 +161,7 @@ Request.prototype._prepareFormData = function(req,cb)
  */
 Request.prototype._preparePostData = function(req,cb)
 {
-    let postData = []
+    let postData = '';
     req.on('data', function(chunk)
     {
         postData += chunk.toString();
@@ -169,10 +169,16 @@ Request.prototype._preparePostData = function(req,cb)
 
     req.on('end', function ()
     {
-
-        if(req.headers["content-type"].indexOf("application/json") !== -1){
+        if ( req.headers["content-type"].indexOf("application/json") !== -1 ) {
             // case content-type is application/json
-            cb(JSON.parse(postData));
+            if (postData) {
+                try {
+                    cb(JSON.parse(postData));
+                } catch (e) {
+                    // in case application/json but data application/x-www-form-urlencoded format
+                    cb(parse(postData));
+                }
+            }
         }else{
             // case content-type is application/x-www-form-urlencoded
             cb(parse(postData));
