@@ -40,14 +40,16 @@ Request.prototype.start = function(req, res, cb = false)
     this._query = req ? url.parse(req.url, true).query : '';
     this._ip = req ? this.getIp(req):'';
 
-    //extract files and body of data from the request
-    if(req && req.headers["content-type"])
-    {
-        this._getPostData(req,() => {
-            if(cb){
-                cb();
-            }
-        })
+    if (req.method != "GET" && req.method != "HEAD" && req.method != "OPTIONS") {
+        //extract files and body of data from the request
+        if(req && req.headers["content-type"])
+        {
+            this._getPostData(req,() => {
+                if(cb){
+                    cb();
+                }
+            })
+        }
     }
 
 }
@@ -159,7 +161,7 @@ Request.prototype._prepareFormData = function(req,cb)
  */
 Request.prototype._preparePostData = function(req,cb)
 {
-    let postData = []
+    let postData = '';
     req.on('data', function(chunk)
     {
         postData += chunk.toString();
@@ -167,16 +169,20 @@ Request.prototype._preparePostData = function(req,cb)
 
     req.on('end', function ()
     {
-
-        if(req.headers["content-type"].indexOf("application/json") !== -1){
+        if ( req.headers["content-type"].indexOf("application/json") !== -1 ) {
             // case content-type is application/json
-            cb(JSON.parse(postData));
+            if (postData) { //if the postData is empty don't proceed
+                try {
+                    cb(JSON.parse(postData));
+                } catch (e) {
+                    // in case application/json but data application/x-www-form-urlencoded format
+                    cb(parse(postData));
+                }
+            }
         }else{
             // case content-type is application/x-www-form-urlencoded
             cb(parse(postData));
         }
-        // cb(parse(postData));
-        // cb(JSON.parse(postData));
     });
 }
 
