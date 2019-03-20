@@ -33,12 +33,11 @@ viewMonitor.prototype.net = function(Client,exports, name, version)
 
             // debug('server.listen wrapped');
 
-            // debug(this)
-
             //We get the socket for the incoming request here..
             this.on('connection',(socket) => {
 
                 //We can also get the data being written to the far end of the stream -another way to get the request-
+                // TODO: parse request
                 // socket.on('data', function(data) { 
                 //     // debug(data) 
                 // });
@@ -49,12 +48,17 @@ viewMonitor.prototype.net = function(Client,exports, name, version)
                 //we wrap around socket.write
                 var oldWrite = socket.write
                 socket.write = function() { 
-                    // process.binding('http_parser').HTTPParser = require('./http-parser.js').HTTPParser;
-
                     //We get chunks of data written to the socket, we're going to use our own http parser
-                    // debug('writing ' + JSON.stringify(arguments)); 
 
-                    //We can do whatever we want with the response here..
+                    // TODO: use http-parser-js module to parse chunks of data instead of manual parsing
+                    // process.binding('http_parser').HTTPParser = require('http-parser-js').HTTPParser;
+                    // debug('writing ' + JSON.stringify(arguments));
+                    var parsedResponse= arguments[0].split("\r\n\r\n");
+                    var headers= parsedResponse[0];
+                    var body= parsedResponse[1];
+
+                    //We can do whatever we want with the r here..
+                    // TODO: apply rules
                     
                     //Then write the result we want to the socket..
                     oldWrite.apply(socket, arguments); 
