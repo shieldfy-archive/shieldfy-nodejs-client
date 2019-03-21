@@ -37,10 +37,15 @@ viewMonitor.prototype.net = function(Client,exports, name, version)
             this.on('connection',(socket) => {
 
                 //We can also get the data being written to the far end of the stream -another way to get the request-
-                // TODO: parse request
-                // socket.on('data', function(data) { 
-                //     // debug(data) 
-                // });
+                socket.on('data', function(data) { 
+                    // debug(data) 
+                    var request= data.toString();
+                    var splitIndex= request.indexOf("\r\n\r\n");
+                    if (splitIndex !== -1) {
+                        var headers= request.substring(0, splitIndex);
+                        var body= request.substring(splitIndex+4);
+                    }
+                });
                 
                 //Of course a node process can have many tcp sockets open so we're gonna have to be more selective and only 
                 //wrap around the sockets that are related to user requests
@@ -53,9 +58,12 @@ viewMonitor.prototype.net = function(Client,exports, name, version)
                     // TODO: use http-parser-js module to parse chunks of data instead of manual parsing
                     // process.binding('http_parser').HTTPParser = require('http-parser-js').HTTPParser;
                     // debug('writing ' + JSON.stringify(arguments));
-                    var parsedResponse= arguments[0].split("\r\n\r\n");
-                    var headers= parsedResponse[0];
-                    var body= parsedResponse[1];
+                    var response= arguments[0];
+                    var splitIndex= response.indexOf("\r\n\r\n");
+                    if (splitIndex !== -1) {
+                        var headers= response.substring(0, splitIndex);
+                        var body= response.substring(splitIndex+4);
+                    }
 
                     //We can do whatever we want with the r here..
                     // TODO: apply rules
