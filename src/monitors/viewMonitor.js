@@ -29,7 +29,7 @@ viewMonitor.prototype.net = function(Client,exports, name, version)
     Shimmer.wrap(exports, 'Server', function(Server) {
                 
         var oldListen = Server.prototype.listen;
-        Server.prototype.listen = function(port = 1234, host = '0.0.0.0', backlog = 0, callback = '') {
+        Server.prototype.listen = function() {
 
             // debug('server.listen wrapped');
 
@@ -74,7 +74,7 @@ viewMonitor.prototype.net = function(Client,exports, name, version)
             })
 
             //Continue..
-            oldListen.call(this ,port, host, backlog, callback);
+            oldListen.apply(this ,arguments);
         }
 
         var ctor = function() {
