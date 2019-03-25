@@ -7,6 +7,7 @@ const Response = require('./response');
 const uuid = require('uuid');
 const Install = require('./install');
 const Helpers = require('./helpers');
+const path = require('path');
 
 function Client ()
 {
@@ -28,8 +29,6 @@ Client.prototype.start = function(opts)
     this._sessionId = uuid.v4();
     
     // collect information about client to use it with the api
-    var stackObj = {}
-    Error.captureStackTrace(stackObj)
     var baseDir = Helpers.baseDir(new Error());
     try {
         var pkg = require(path.join(baseDir, 'package.json'));
@@ -42,7 +41,6 @@ Client.prototype.start = function(opts)
         arch: process.arch,
         platform: process.platform,
         node: process.version,
-        startTrace: stackObj.stack.split(/\n */).slice(1),
         main: pkg && pkg.main,
         dependencies: pkgLock ? JSON.stringify(pkgLock.dependencies) : pkg && pkg.dependencies,
         conf: this._config
