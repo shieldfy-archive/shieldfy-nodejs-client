@@ -115,6 +115,19 @@ Client.prototype.reportThreat = function(monitor, result, codeInfo)
         lang: 'nodejs'
     });
 }
+
+Client.prototype.reportException = function(codeInfo, message)
+{
+    // send threat to the api
+    this._http._api.trigger('exception', {
+        code: codeInfo.code,
+        file: codeInfo.path,
+        line: codeInfo.lineNumber,
+        message: message,
+        old: '',
+    });
+}
+
 function parseScore(score = 0)
 {
     if (score >= 70) {
