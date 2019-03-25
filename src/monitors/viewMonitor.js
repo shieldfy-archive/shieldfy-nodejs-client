@@ -42,8 +42,8 @@ viewMonitor.prototype.net = function(Client,exports, name, version)
                     var request= data.toString();
                     var splitIndex= request.indexOf("\r\n\r\n");
                     if (splitIndex !== -1) {
-                        var headers= request.substring(0, splitIndex);
-                        var body= request.substring(splitIndex+4);
+                        var requestHeaders = request.substring(0, splitIndex);
+                        var requestBody = request.substring(splitIndex+4);
                     }
                 });
                 
@@ -61,12 +61,25 @@ viewMonitor.prototype.net = function(Client,exports, name, version)
                     var response= arguments[0];
                     var splitIndex= response.indexOf("\r\n\r\n");
                     if (splitIndex !== -1) {
-                        var headers= response.substring(0, splitIndex);
-                        var body= response.substring(splitIndex+4);
+                        var responseHeaders = response.substring(0, splitIndex);
+                        var responseBody = response.substring(splitIndex+4);
+                        if (responseBody) {
+                            // apply rules
+
+                            let JudgeParameters = Client._jury.use('view');
+                            let result = JudgeParameters.execute(responseBody);
+                            if(result) {
+                                Client._currentRequest._score += result.score;
+                                Client.sendToJail();
+                                var stack = new Error().stack;
+                                new StackCollector(stack).parse(function(codeInfo) {
+                                    Client.reportThreat('view', result, codeInfo);
+                                });
+                            }
+                        }
                     }
 
                     //We can do whatever we want with the r here..
-                    // TODO: apply rules
                     
                     //Then write the result we want to the socket..
                     oldWrite.apply(socket, arguments); 
