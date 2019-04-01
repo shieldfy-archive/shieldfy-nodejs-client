@@ -82,12 +82,12 @@ viewMonitor.prototype.net = function(Client,exports, name, version)
                     //We can do whatever we want with the r here..
                     
                     //Then write the result we want to the socket..
-                    oldWrite.apply(socket, arguments); 
+                    return oldWrite.apply(socket, arguments); 
                 }
             })
 
             //Continue..
-            oldListen.apply(this ,arguments);
+            return oldListen.apply(this ,arguments);
         }
 
         var ctor = function() {

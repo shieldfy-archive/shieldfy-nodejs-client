@@ -118,7 +118,7 @@ Client.prototype.reportThreat = function(monitor, result, codeInfo)
 
 Client.prototype.reportException = function(codeInfo, message)
 {
-    // send threat to the api
+    // send exception to the api
     this._http._api.trigger('exception', {
         code: codeInfo.code,
         file: codeInfo.path,
