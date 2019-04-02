@@ -70,7 +70,7 @@ DBMonitor.prototype.mysql2 = function(Client, exports, name, version)
 }
 
  // handle conflict with mongoose
-DBMonitor.prototype.mongoose = function(Client, exports, name){
+DBMonitor.prototype.mongoose = function(Client, exports, name) {
 
     Shimmer.wrap(exports, 'model',function(original) {
         return function (schemeName, schemeObj) {
@@ -86,7 +86,7 @@ DBMonitor.prototype.mongoose = function(Client, exports, name){
     });
 }
 
-DBMonitor.prototype.mongoDB = function(Client, exports,name){
+DBMonitor.prototype.mongoDB = function(Client, exports,name) {
     // TODO: need to discuse
     // Shimmer.massWrap(exports.Server.prototype, ['insert','update', 'remove', 'auth', 'command', 'cursor'], function(original) {
     Shimmer.massWrap(exports.Server.prototype, ['cursor'], function(original) {
@@ -150,12 +150,12 @@ function wrapQuery(Client, connection)
                         for(let param in requestParams){
                             
                             let paramValue = requestParams[param];
-                            if(query.indexOf(paramValue) !== -1){
+                            if (query.indexOf(paramValue) !== -1) {
                                 //Matched YAY
                                 paramValue = new Normalizer(paramValue).run();
                                 let Judge = Client._jury.use('db','sqli');
                                 let result = Judge.execute(paramValue);
-                                if(result){                      
+                                if (result) {                    
                                     Client._currentRequest._score += result.score;
                                     Client.sendToJail();
                                     var stack = new Error().stack;
@@ -172,23 +172,25 @@ function wrapQuery(Client, connection)
         }
     });
 }
-function wrapQueryObject(query, requestParams, Client){
+
+function wrapQueryObject(query, requestParams, Client)
+{
     for (const key in query) {
         sqlQuery= query[key];
         
-        for(let param in requestParams){
+        for (let param in requestParams) {
             
             let paramValue = requestParams[param];
-            if(sqlQuery.indexOf(paramValue) !== -1){
+            if (sqlQuery.indexOf(paramValue) !== -1) {
                 //Matched YAY
-                paramValue = new Normalizer(sqlQuery).run();
+                paramValue = new Normalizer(paramValue).run();
                 let Judge = Client._jury.use('db','sqli');
                 let result = Judge.execute(paramValue);
-                if(result){                      
+                if (result) { 
                     Client._currentRequest._score += result.score;
                     Client.sendToJail();
                     var stack = new Error().stack;
-                    new StackCollector(stack).parse(function(codeInfo){
+                    new StackCollector(stack).parse(function(codeInfo) {
                         Client.reportThreat('db', result, codeInfo);
                     });
                 }
@@ -206,13 +208,13 @@ function wrapExecute(Client, connection)
 
                 let requestParams = Client._currentRequest.getParam();
 
-                if(!(Object.keys(requestParams).length === 0 && requestParams.constructor === Object)){
+                if (!(Object.keys(requestParams).length === 0 && requestParams.constructor === Object)) {
                     
-                    for(let param in requestParams){
+                    for (let param in requestParams) {
                         
                         let paramValue = requestParams[param];
                         
-                        if(query.indexOf(paramValue) !== -1){
+                        if (query.indexOf(paramValue) !== -1) {
                             //Matched YAY
                             paramValue = new Normalizer(paramValue).run();
                             let Judge = Client._jury.use('db','sqli');
@@ -221,7 +223,7 @@ function wrapExecute(Client, connection)
                                 Client._currentRequest._score += result.score;
                                 Client.sendToJail();
                                 var stack = new Error().stack;
-                                new StackCollector(stack).parse(function(codeInfo){
+                                new StackCollector(stack).parse(function(codeInfo) {
                                     Client.reportThreat('db', result, codeInfo);
                                 });
                             }

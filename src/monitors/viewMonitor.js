@@ -5,6 +5,7 @@ const Hook = require('require-in-the-middle');
 const Shimmer = require('shimmer');
 const Normalizer = require('../normalizer');
 const StackCollector = require('../stackCollector');
+const isReflectedXssVector= require('./viewCatchLogic');
 
 const viewMonitor = function()
 {
@@ -40,11 +41,11 @@ viewMonitor.prototype.net = function(Client,exports, name, version)
                 socket.on('data', function(data) { 
                     // debug(data) 
                     var request= data.toString();
-                    var splitIndex= request.indexOf("\r\n\r\n");
-                    if (splitIndex !== -1) {
-                        var requestHeaders = request.substring(0, splitIndex);
-                        var requestBody = request.substring(splitIndex+4);
-                    }
+                    // var splitIndex= request.indexOf("\r\n\r\n");
+                    // if (splitIndex !== -1) {
+                    //     var requestHeaders = request.substring(0, splitIndex);
+                    //     var requestBody = request.substring(splitIndex+4);
+                    // }
                 });
                 
                 //Of course a node process can have many tcp sockets open so we're gonna have to be more selective and only 
@@ -58,23 +59,42 @@ viewMonitor.prototype.net = function(Client,exports, name, version)
                     // TODO: use http-parser-js module to parse chunks of data instead of manual parsing
                     // process.binding('http_parser').HTTPParser = require('http-parser-js').HTTPParser;
                     // debug('writing ' + JSON.stringify(arguments));
-                    var response= arguments[0];
-                    var splitIndex= response.indexOf("\r\n\r\n");
-                    if (splitIndex !== -1) {
-                        var responseHeaders = response.substring(0, splitIndex);
-                        var responseBody = response.substring(splitIndex+4);
-                        if (responseBody) {
-                            // apply rules
-
-                            let JudgeParameters = Client._jury.use('view');
-                            let result = JudgeParameters.execute(responseBody);
-                            if(result) {
-                                Client._currentRequest._score += result.score;
-                                Client.sendToJail();
-                                var stack = new Error().stack;
-                                new StackCollector(stack).parse(function(codeInfo) {
-                                    Client.reportThreat('view', result, codeInfo);
-                                });
+                    
+                    // var splitIndex= response.indexOf("\r\n\r\n");
+                    // if (splitIndex !== -1) {
+                    //     var responseHeaders = response.substring(0, splitIndex);
+                    //     var responseBody = response.substring(splitIndex+4);
+                    //     if (responseBody) {
+                    //         // apply rules
+                    //         let JudgeParameters = Client._jury.use('view');
+                    //         let result = JudgeParameters.execute(responseBody);
+                    //         if(result) {
+                    //             Client._currentRequest._score += result.score;
+                    //             Client.sendToJail();
+                    //             var stack = new Error().stack;
+                    //             new StackCollector(stack).parse(function(codeInfo) {
+                    //                 Client.reportThreat('view', result, codeInfo);
+                    //             });
+                    //         }
+                    //     }
+                    // }
+                    var response= arguments[0].toString();
+                    if (Client._currentRequest) {
+                        let requestParams = Client._currentRequest.getParam();
+                        for (let param in requestParams) {
+                            let paramValue = requestParams[param];
+                            if (isReflectedXssVector(paramValue, response)) {
+                                //Matched YAY
+                                let JudgeParameters = Client._jury.use('view');
+                                let result = JudgeParameters.execute(response);
+                                if(result) {
+                                    Client._currentRequest._score += result.score;
+                                    Client.sendToJail();
+                                    var stack = new Error().stack;
+                                    new StackCollector(stack).parse(function(codeInfo) {
+                                        Client.reportThreat('view', result, codeInfo);
+                                    });
+                                }
                             }
                         }
                     }

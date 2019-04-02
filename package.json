@@ -12,6 +12,8 @@
     "busboy": "^0.3.0",
     "cookie": "^0.3.1",
     "crypto-js": "^3.1.9-1",
+    "debug": "^4.1.1",
+    "escape-string-regexp": "^1.0.5",
     "request": "^2.88.0",
     "require-in-the-middle": "^3.1.0",
     "shimmer": "^1.2.1",
