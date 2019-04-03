@@ -5,7 +5,7 @@ const Hook = require('require-in-the-middle');
 const Shimmer = require('shimmer');
 const Normalizer = require('../normalizer');
 const StackCollector = require('../stackCollector');
-const isReflectedXssVector= require('./viewCatchLogic');
+const isReflectedXssVector= require('./helper/viewCatchLogic');
 
 const viewMonitor = function()
 {
