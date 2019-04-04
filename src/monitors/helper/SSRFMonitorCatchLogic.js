@@ -37,10 +37,10 @@ function isSSRFVector(param, urlOption){
         // Object.keys(URL.prototype).foreach(prop => {
 
         // })
-        if (paramToURL.host && urlObject.host && paramURL.host  == urlObject.host) {
+        if (paramURL.host && urlObject.host && paramURL.host  == urlObject.host) {
             matched = true;
         }
-        if (paramToURL.hostname && urlObject.hostname && paramURL.hostname  == urlObject.hostname) {
+        if (paramURL.hostname && urlObject.hostname && paramURL.hostname  == urlObject.hostname) {
             matched = true;
         }
     }
