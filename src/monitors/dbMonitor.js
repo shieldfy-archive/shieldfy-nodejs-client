@@ -2,15 +2,13 @@ const Hook = require('require-in-the-middle');
 const Shimmer = require('shimmer');
 const Normalizer = require('../normalizer');
 const StackCollector = require('../stackCollector');
-const mongooseAsyncHooks = require('../asyncHooks/mongoose');
 
 const DBMonitor = function()
 {
     this._callbacks = {
         'mysql': this.mysql,
         'mysql2': this.mysql2,
-        'mongodb-core' : this.mongoDB,
-        'mongoose' : this.mongoose
+        'mongodb-core' : this.mongoDB
     }
 }
 
@@ -67,23 +65,6 @@ DBMonitor.prototype.mysql2 = function(Client, exports, name, version)
     });
 
     return exports;
-}
-
- // handle conflict with mongoose
-DBMonitor.prototype.mongoose = function(Client, exports, name) {
-
-    Shimmer.wrap(exports, 'model',function(original) {
-        return function (schemeName, schemeObj) {
-            
-            // add this plugin to the scheme to handle the conflict
-            if(typeof schemeObj !== "undefined" ){
-                schemeObj.plugin(mongooseAsyncHooks);
-            }
-
-            var connection = original.apply(this, arguments);
-            return connection;
-        }
-    });
 }
 
 DBMonitor.prototype.mongoDB = function(Client, exports,name) {
