@@ -6,6 +6,7 @@ const MonitorsList = [
     'view',
     'ssrf',
 ];
+// test
 const monitors = function(Client)
 {
     MonitorsList.forEach(monitor => {
