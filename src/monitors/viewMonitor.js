@@ -4,11 +4,13 @@ const Hook = require('require-in-the-middle');
 const Shimmer = require('shimmer');
 const isReflectedXssVector= require('./helper/viewCatchLogic');
 const StackCollector = require('../stackCollector');
+const semver = require('semver');
+const fs = require('fs')
+const path = require('path')
 
 const viewMonitor = function()
 {
     this._callbacks = {
-        'http': this.analyzeResponse,
         'express': this.handleExpress
     }
 }
@@ -17,38 +19,29 @@ viewMonitor.prototype.run = function(Client)
 {
     let Packages = Object.keys(this._callbacks);
     Hook(Packages,  (exports, name, basedir) => {  
-        if(this._callbacks.hasOwnProperty(name) ){
-            this._callbacks[name](Client, exports, name);
+        var pkg, version;
+        if (basedir) {
+            pkg = path.join(basedir, 'package.json');
+            try {
+              version = JSON.parse(fs.readFileSync(pkg)).version;
+            } catch (e) {
+                return exports;
+            }
+        } else {
+            version = process.versions.node;
+        }
+        
+        if (this._callbacks.hasOwnProperty(name) ) {
+            this._callbacks[name](Client, exports, name, version);
         }
         return exports;
     });
 }
 
+viewMonitor.prototype.handleExpress = function(Client, exports, name, version) {
 
-viewMonitor.prototype.analyzeResponse = function(Client, exports, name) {
-    Shimmer.wrap(exports && exports.ServerResponse && exports.ServerResponse.prototype, 'write', function (original) {
-        return function () {
-            var returned = original.apply(this, arguments);
-            return returned;
-        };
-    });
-
-    Shimmer.wrap(exports && exports.ServerResponse && exports.ServerResponse.prototype, 'end', function (original) {
-        return function () {
-            //TypeError: Cannot read property 'toString' of undefined , when no arguments : curl -I
-            var returned = original.apply(this, arguments);
-            return returned;
-        }
-    });
-    return exports;
-}
-
-viewMonitor.prototype.handleExpress = function(Client, exports, name) {
-
-    //wrap res.end after compression wrapping
-    var routerProto = exports.Router && exports.Router.prototype;
-    var routerProto = exports.Router;
-    
+    //wrap res.end after compression wrapping    
+    var routerProto = semver.satisfies(version, '^5') ? (exports.Router && exports.Router.prototype) : exports.Router;    
 
     Shimmer.wrap(routerProto, 'route', orig => {
         return function route (path) {
