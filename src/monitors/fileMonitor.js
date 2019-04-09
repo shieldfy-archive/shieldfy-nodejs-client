@@ -1,7 +1,6 @@
 const Hook = require('require-in-the-middle');
 const Shimmer = require('shimmer');
 const Normalizer = require('../normalizer');
-const StackCollector = require('../stackCollector');
 
 const fileMonitor = function()
 {
@@ -78,14 +77,7 @@ fileMonitor.prototype.handleFile = function(Client,exports, name, version)
                             paramValue = new Normalizer(path).run();
                             let JudgeParameters = Client._jury.use('files','FILENAME');
                             let result = JudgeParameters.execute(paramValue);
-                            if(result){
-                                Client._currentRequest._score += result.score;
-                                Client.sendToJail();
-                                var stack = new Error().stack;
-                                new StackCollector(stack).parse(function(codeInfo){
-                                    Client.reportThreat('file', result, codeInfo);
-                                });
-                            }
+                            Client.sendToJail('file', result, new Error().stack);
                         }
                     });
                 }
@@ -97,14 +89,7 @@ fileMonitor.prototype.handleFile = function(Client,exports, name, version)
                             fileContent = new Normalizer(fileContent).run();
                             let JudgeParameters = Client._jury.use('files','CONTENT');
                             let result = JudgeParameters.execute(fileContent);
-                            if(result){
-                                Client._currentRequest._score += result.score;
-                                Client.sendToJail();
-                                var stack = new Error().stack;
-                                new StackCollector(stack).parse(function(codeInfo){
-                                    Client.reportThreat('file', result, codeInfo);
-                                });
-                            }
+                            Client.sendToJail('file', result, new Error().stack);
                         }
                         var returned = original.apply(this, arguments);
                         return returned;
@@ -204,14 +189,7 @@ function wrapRead(path, Client)
                         paramValue = new Normalizer(path).run();
                         let JudgeParameters = Client._jury.use('files','PARAMETERS');
                         let result = JudgeParameters.execute(paramValue);
-                        if(result){
-                            Client._currentRequest._score += result.score;
-                            Client.sendToJail();
-                            var stack = new Error().stack;
-                            new StackCollector(stack).parse(function(codeInfo){
-                                Client.reportThreat('file', result, codeInfo);
-                            });
-                        }
+                        Client.sendToJail('file', result, new Error().stack);
                     }
                 }
                 // apply file(target: url) rules on uri
@@ -220,14 +198,7 @@ function wrapRead(path, Client)
                     paramValue = new Normalizer(path).run();
                     let JudgeUrl = Client._jury.use('files','URL');
                     let result = JudgeUrl.execute(paramValue);
-                    if(result){
-                        Client._currentRequest._score += result.score;
-                        Client.sendToJail();
-                        var stack = new Error().stack;
-                        new StackCollector(stack).parse(function(codeInfo){
-                            Client.reportThreat('file', result, codeInfo);
-                        });
-                    }
+                    Client.sendToJail('file', result, new Error().stack);
                 }
             }
         }catch(e) {}
@@ -246,14 +217,7 @@ function wrapWrite(path, data, Client){
                     paramValue = new Normalizer(path).run();
                     let JudgeParameters = Client._jury.use('files','FILENAME');
                     let result = JudgeParameters.execute(paramValue);
-                    if(result){
-                        Client._currentRequest._score += result.score;
-                        Client.sendToJail();
-                        var stack = new Error().stack;
-                        new StackCollector(stack).parse(function(codeInfo){
-                            Client.reportThreat('file', result, codeInfo);
-                        });
-                    }
+                    Client.sendToJail('file', result, new Error().stack);
                 }
             });
         }
@@ -263,14 +227,7 @@ function wrapWrite(path, data, Client){
             fileContent = new Normalizer(fileContent).run();
             let JudgeParameters = Client._jury.use('files','CONTENT');
             let result = JudgeParameters.execute(fileContent);
-            if(result){
-                Client._currentRequest._score += result.score;
-                Client.sendToJail();
-                var stack = new Error().stack;
-                new StackCollector(stack).parse(function(codeInfo){
-                    Client.reportThreat('file', result, codeInfo);
-                });
-            }
+            Client.sendToJail('file', result, new Error().stack);
         }
     }
 }

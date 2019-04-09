@@ -109,7 +109,7 @@ function shieldfyHeaders(Client)
 function getSignature(Client)
 {
     if (Client._config.appKey && Client._config.appSecret) {
-        Client._config.signature = CryptoJS.HmacSHA256(Client._config.appKey, Client._config.appSecret);
+        Client._config.signature = CryptoJS.HmacSHA256(Client._config.appKey, Client._config.appSecret).toString();
     } else {
         Client._config.signature = "invalid signature";
     }

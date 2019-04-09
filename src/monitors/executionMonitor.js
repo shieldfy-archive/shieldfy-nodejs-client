@@ -1,7 +1,5 @@
 const Hook = require('require-in-the-middle');
 const Shimmer = require('shimmer');
-const Normalizer = require('../normalizer');
-const StackCollector = require('../stackCollector');
 
 const executionMonitor = function()
 {

@@ -7,6 +7,8 @@ const Response = require('./response');
 const uuid = require('uuid');
 const Install = require('./install');
 const Helpers = require('./helpers');
+const path = require('path');
+const StackCollector = require('./stackCollector');
 
 function Client ()
 {
@@ -28,8 +30,6 @@ Client.prototype.start = function(opts)
     this._sessionId = uuid.v4();
     
     // collect information about client to use it with the api
-    var stackObj = {}
-    Error.captureStackTrace(stackObj)
     var baseDir = Helpers.baseDir(new Error());
     try {
         var pkg = require(path.join(baseDir, 'package.json'));
@@ -42,7 +42,6 @@ Client.prototype.start = function(opts)
         arch: process.arch,
         platform: process.platform,
         node: process.version,
-        startTrace: stackObj.stack.split(/\n */).slice(1),
         main: pkg && pkg.main,
         dependencies: pkgLock ? JSON.stringify(pkgLock.dependencies) : pkg && pkg.dependencies,
         conf: this._config
@@ -70,7 +69,20 @@ Client.prototype.start = function(opts)
 
 }
 
-Client.prototype.sendToJail = function()
+Client.prototype.sendToJail = function(monitorName, result, stack)
+{
+    if (result) {        
+        this._currentRequest._score += result.score;
+        this.setIncidentId();
+        var _this = this
+        new StackCollector(stack).parse(function(codeInfo){            
+            _this.reportThreat(monitorName, result, codeInfo);
+        });
+    }
+    return;
+}
+
+Client.prototype.setIncidentId = function()
 {
     if(this._currentRequest._score >= 70){
         this._currentRequest.setDanger(true);
@@ -117,6 +129,19 @@ Client.prototype.reportThreat = function(monitor, result, codeInfo)
         lang: 'nodejs'
     });
 }
+
+Client.prototype.reportException = function(codeInfo, message)
+{
+    // send exception to the api
+    this._http._api.trigger('exception', {
+        code: codeInfo.code,
+        file: codeInfo.path,
+        line: codeInfo.lineNumber,
+        message: message,
+        old: '',
+    });
+}
+
 function parseScore(score = 0)
 {
     if (score >= 70) {

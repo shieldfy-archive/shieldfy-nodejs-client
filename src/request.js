@@ -56,22 +56,7 @@ Request.prototype.start = function(req, res, cb = false)
 
 Request.prototype.getIp = function(req)
 {
-    try {
-        if (req.headers === undefined){
-            throw "request does not has a headers"
-        }else{
-            var xff = req.headers['x-forwarded-for'];
-        }
-    
-        var ip = req.connection.remoteAddress;
-    
-        if (xff) {
-            if (xff != ip) {
-                return ip;
-            }
-        }
-        return ip;
-    } catch(e) {}
+    return (req.headers['x-forwarded-for'] || '').split(',')[0] || req.connection.remoteAddress;
 }
 
 Request.prototype._getPostData = function(req,cb)
