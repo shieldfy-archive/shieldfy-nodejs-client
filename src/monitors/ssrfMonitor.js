@@ -3,7 +3,6 @@
 const Hook = require('require-in-the-middle');
 const Shimmer = require('shimmer');
 const util = require('util');
-const StackCollector = require('../stackCollector');
 const isSSRFVector= require('./helper/SSRFMonitorCatchLogic');
 const SSRFJudgeFudge= require('./helper/SSRFJudgeFudge');
 const { URL } = require('url');
@@ -44,15 +43,7 @@ ssrfMonitor.prototype.http = function(Client,exports, name, version)
                                 
                                 let Judge = Client._jury.use('ssrf');
                                 let result = Judge.execute(host);
-                                
-                                if(result){
-                                    Client._currentRequest._score += result.score;
-                                    Client.sendToJail();
-                                    var stack = new Error().stack;
-                                    new StackCollector(stack).parse(function(codeInfo){
-                                        Client.reportThreat('ssrf', result, codeInfo);
-                                    });
-                                }
+                                Client.sendToJail('ssrf', result, new Error().stack);
                             }
                         }
                         
@@ -61,15 +52,7 @@ ssrfMonitor.prototype.http = function(Client,exports, name, version)
                             let urlOb = new URL(arguments[0]);
                             let host = urlOb.host || urlOb.hostname;
                             let result = SSRFJudgeFudge(host)
-                            
-                            if (result) {
-                                Client._currentRequest._score += result.score;
-                                Client.sendToJail();
-                                var stack = new Error().stack;
-                                new StackCollector(stack).parse(function(codeInfo) {
-                                    Client.reportThreat('ssrf', result, codeInfo);
-                                });
-                            }
+                            Client.sendToJail('ssrf', result, new Error().stack);
                             
                         }catch (e) {
                             
@@ -106,15 +89,7 @@ ssrfMonitor.prototype.http = function(Client,exports, name, version)
                                 
                                 let Judge = Client._jury.use('ssrf');
                                 let result = Judge.execute(host);
-                                
-                                if(result){
-                                    Client._currentRequest._score += result.score;
-                                    Client.sendToJail();
-                                    var stack = new Error().stack;
-                                    new StackCollector(stack).parse(function(codeInfo){
-                                        Client.reportThreat('ssrf', result, codeInfo);
-                                    });
-                                }
+                                Client.sendToJail('ssrf', result, new Error().stack);
                             }
                         }
 
@@ -123,15 +98,7 @@ ssrfMonitor.prototype.http = function(Client,exports, name, version)
                             let urlOb = new URL(arguments[0]);
                             let host = urlOb.host || urlOb.hostname;
                             let result = SSRFJudgeFudge(host)
-                            
-                            if(result){
-                                Client._currentRequest._score += result.score;
-                                Client.sendToJail();
-                                var stack = new Error().stack;
-                                new StackCollector(stack).parse(function(codeInfo){
-                                    Client.reportThreat('ssrf', result, codeInfo);
-                                });
-                            }
+                            Client.sendToJail('ssrf', result, new Error().stack);
                         }catch (e) {
 
                         }
@@ -148,29 +115,13 @@ ssrfMonitor.prototype.http = function(Client,exports, name, version)
                                 
                                 let Judge = Client._jury.use('ssrf');
                                 let result = Judge.execute(host);
-                                
-                                if(result){
-                                    Client._currentRequest._score += result.score;
-                                    Client.sendToJail();
-                                    var stack = new Error().stack;
-                                    new StackCollector(stack).parse(function(codeInfo){
-                                        Client.reportThreat('ssrf', result, codeInfo);
-                                    });
-                                }
+                                Client.sendToJail('ssrf', result, new Error().stack);
                             }
                         }
                         
                         let host = urlOb.host || urlOb.hostname;
                         let result = SSRFJudgeFudge(host)
-                        
-                        if(result){
-                            Client._currentRequest._score += result.score;
-                            Client.sendToJail();
-                            var stack = new Error().stack;
-                            new StackCollector(stack).parse(function(codeInfo){
-                                Client.reportThreat('ssrf', result, codeInfo);
-                            });
-                        }
+                        Client.sendToJail('ssrf', result, new Error().stack);
                     }
                 }
             }
@@ -194,15 +145,7 @@ ssrfMonitor.prototype.http = function(Client,exports, name, version)
                                 
                                 let Judge = Client._jury.use('ssrf');
                                 let result = Judge.execute(host);
-                                
-                                if(result){
-                                    Client._currentRequest._score += result.score;
-                                    Client.sendToJail();
-                                    var stack = new Error().stack;
-                                    new StackCollector(stack).parse(function(codeInfo){
-                                        Client.reportThreat('ssrf', result, codeInfo);
-                                    });
-                                }
+                                Client.sendToJail('ssrf', result, new Error().stack);
                             }
                         }
                         
@@ -211,15 +154,7 @@ ssrfMonitor.prototype.http = function(Client,exports, name, version)
                             let urlOb = new URL(arguments[0]);
                             let host = urlOb.host || urlOb.hostname;
                             let result = SSRFJudgeFudge(host)
-                            
-                            if(result){
-                                Client._currentRequest._score += result.score;
-                                Client.sendToJail();
-                                var stack = new Error().stack;
-                                new StackCollector(stack).parse(function(codeInfo){
-                                    Client.reportThreat('ssrf', result, codeInfo);
-                                });
-                            }
+                            Client.sendToJail('ssrf', result, new Error().stack);
                         }catch (e) {
 
                         }
@@ -236,29 +171,13 @@ ssrfMonitor.prototype.http = function(Client,exports, name, version)
                                 
                                 let Judge = Client._jury.use('ssrf');
                                 let result = Judge.execute(host);
-                                
-                                if(result){
-                                    Client._currentRequest._score += result.score;
-                                    Client.sendToJail();
-                                    var stack = new Error().stack;
-                                    new StackCollector(stack).parse(function(codeInfo){
-                                        Client.reportThreat('ssrf', result, codeInfo);
-                                    });
-                                }
+                                Client.sendToJail('ssrf', result, new Error().stack);
                             }
                         }
 
                         let host = urlOb.host || urlOb.hostname;
                         let result = SSRFJudgeFudge(host)
-                        
-                        if(result){
-                            Client._currentRequest._score += result.score;
-                            Client.sendToJail();
-                            var stack = new Error().stack;
-                            new StackCollector(stack).parse(function(codeInfo){
-                                Client.reportThreat('ssrf', result, codeInfo);
-                            });
-                        }
+                        Client.sendToJail('ssrf', result, new Error().stack);
                     }
                 }
             }
@@ -286,15 +205,7 @@ ssrfMonitor.prototype.http2 = function(Client,exports, name, version)
                                 
                                 let Judge = Client._jury.use('ssrf');
                                 let result = Judge.execute(host);
-                                
-                                if(result){
-                                    Client._currentRequest._score += result.score;
-                                    Client.sendToJail();
-                                    var stack = new Error().stack;
-                                    new StackCollector(stack).parse(function(codeInfo){
-                                        Client.reportThreat('ssrf', result, codeInfo);
-                                    });
-                                }
+                                Client.sendToJail('ssrf', result, new Error().stack);
                             }
                         }
 
@@ -303,15 +214,7 @@ ssrfMonitor.prototype.http2 = function(Client,exports, name, version)
                             let urlOb = new URL(arguments[0]);
                             let host = urlOb.host || urlOb.hostname;
                             let result = SSRFJudgeFudge(host)
-                            
-                            if(result){
-                                Client._currentRequest._score += result.score;
-                                Client.sendToJail();
-                                var stack = new Error().stack;
-                                new StackCollector(stack).parse(function(codeInfo){
-                                    Client.reportThreat('ssrf', result, codeInfo);
-                                });
-                            }
+                            Client.sendToJail('ssrf', result, new Error().stack);
                         }catch (e) {
                             
                         }

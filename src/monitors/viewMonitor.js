@@ -3,7 +3,6 @@
 const Hook = require('require-in-the-middle');
 const Shimmer = require('shimmer');
 const isReflectedXssVector= require('./helper/viewCatchLogic');
-const StackCollector = require('../stackCollector');
 const semver = require('semver');
 const fs = require('fs')
 const path = require('path')
@@ -63,14 +62,7 @@ viewMonitor.prototype.handleExpress = function(Client, exports, name, version) {
                                         //Matched YAY
                                         let JudgeParameters = Client._jury.use('view');
                                         let result = JudgeParameters.execute(paramValue);
-                                        if(result) {
-                                            Client._currentRequest._score += result.score;
-                                            Client.sendToJail();
-                                            var stack = new Error().stack;
-                                            new StackCollector(stack).parse(function(codeInfo) {
-                                                Client.reportThreat('view', result, codeInfo);
-                                            });
-                                        }
+                                        Client.sendToJail('view', result, new Error().stack);
                                     }
                                 }
                             }
@@ -91,14 +83,7 @@ viewMonitor.prototype.handleExpress = function(Client, exports, name, version) {
                                         //Matched YAY
                                         let JudgeParameters = Client._jury.use('view');
                                         let result = JudgeParameters.execute(paramValue);
-                                        if(result) {
-                                            Client._currentRequest._score += result.score;
-                                            Client.sendToJail();
-                                            var stack = new Error().stack;
-                                            new StackCollector(stack).parse(function(codeInfo) {
-                                                Client.reportThreat('view', result, codeInfo);
-                                            });
-                                        }
+                                        Client.sendToJail('view', result, new Error().stack);
                                     }
                                 }
                             }
@@ -119,14 +104,7 @@ viewMonitor.prototype.handleExpress = function(Client, exports, name, version) {
                                         //Matched YAY
                                         let JudgeParameters = Client._jury.use('view');
                                         let result = JudgeParameters.execute(paramValue);
-                                        if(result) {
-                                            Client._currentRequest._score += result.score;
-                                            Client.sendToJail();
-                                            var stack = new Error().stack;
-                                            new StackCollector(stack).parse(function(codeInfo) {
-                                                Client.reportThreat('view', result, codeInfo);
-                                            });
-                                        }
+                                        Client.sendToJail('view', result, new Error().stack);
                                     }
                                 }
                             }

@@ -8,6 +8,7 @@ const uuid = require('uuid');
 const Install = require('./install');
 const Helpers = require('./helpers');
 const path = require('path');
+const StackCollector = require('./stackCollector');
 
 function Client ()
 {
@@ -68,7 +69,20 @@ Client.prototype.start = function(opts)
 
 }
 
-Client.prototype.sendToJail = function()
+Client.prototype.sendToJail = function(monitorName, result, stack)
+{
+    if (result) {        
+        this._currentRequest._score += result.score;
+        this.setIncidentId();
+        var _this = this
+        new StackCollector(stack).parse(function(codeInfo){            
+            _this.reportThreat(monitorName, result, codeInfo);
+        });
+    }
+    return;
+}
+
+Client.prototype.setIncidentId = function()
 {
     if(this._currentRequest._score >= 70){
         this._currentRequest.setDanger(true);

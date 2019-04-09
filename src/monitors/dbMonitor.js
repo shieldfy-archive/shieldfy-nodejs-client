@@ -1,7 +1,6 @@
 const Hook = require('require-in-the-middle');
 const Shimmer = require('shimmer');
 const Normalizer = require('../normalizer');
-const StackCollector = require('../stackCollector');
 
 const DBMonitor = function()
 {
@@ -92,15 +91,7 @@ DBMonitor.prototype.mongoDB = function(Client, exports,name) {
                           
                             let Judge = Client._jury.use('db','nosqli');
                             let result = Judge.execute(paramValue);
-
-                            if(result){
-                                Client._currentRequest._score += result.score;
-                                Client.sendToJail();
-                                var stack = new Error().stack;
-                                new StackCollector(stack).parse(function(codeInfo){
-                                    Client.reportThreat('db', result, codeInfo);
-                                });
-                            }
+                            Client.sendToJail('db', result, new Error().stack);
                         }
                     }
                 }
@@ -136,14 +127,7 @@ function wrapQuery(Client, connection)
                                 paramValue = new Normalizer(paramValue).run();
                                 let Judge = Client._jury.use('db','sqli');
                                 let result = Judge.execute(paramValue);
-                                if (result) {                    
-                                    Client._currentRequest._score += result.score;
-                                    Client.sendToJail();
-                                    var stack = new Error().stack;
-                                    new StackCollector(stack).parse(function(codeInfo){
-                                        Client.reportThreat('db', result, codeInfo);
-                                    });
-                                }
+                                Client.sendToJail('db', result, new Error().stack);
                             }
                         }
                     }
@@ -167,14 +151,7 @@ function wrapQueryObject(query, requestParams, Client)
                 paramValue = new Normalizer(paramValue).run();
                 let Judge = Client._jury.use('db','sqli');
                 let result = Judge.execute(paramValue);
-                if (result) { 
-                    Client._currentRequest._score += result.score;
-                    Client.sendToJail();
-                    var stack = new Error().stack;
-                    new StackCollector(stack).parse(function(codeInfo) {
-                        Client.reportThreat('db', result, codeInfo);
-                    });
-                }
+                Client.sendToJail('db', result, new Error().stack);
             }
         }
     }
@@ -200,14 +177,7 @@ function wrapExecute(Client, connection)
                             paramValue = new Normalizer(paramValue).run();
                             let Judge = Client._jury.use('db','sqli');
                             let result = Judge.execute(paramValue);
-                            if(result){                      
-                                Client._currentRequest._score += result.score;
-                                Client.sendToJail();
-                                var stack = new Error().stack;
-                                new StackCollector(stack).parse(function(codeInfo) {
-                                    Client.reportThreat('db', result, codeInfo);
-                                });
-                            }
+                            Client.sendToJail('db', result, new Error().stack);
                         }
                     }
                 }
