@@ -23,7 +23,39 @@ executionMonitor.prototype.childProcess = function(Client,exports, name, version
 {
     
     Shimmer.wrap( exports , 'exec', function (original) {
-        return function (command) { 
+        return function (command, options, callback) { 
+            
+            var returned = original.apply(this, arguments);
+            return returned;
+        }
+    });
+
+    Shimmer.wrap( exports , 'execSync', function (original) {
+        return function (command, options) { 
+            
+            var returned = original.apply(this, arguments);
+            return returned;
+        }
+    });
+
+    Shimmer.wrap( exports , 'spawn', function (original) {
+        return function (command, args, options) { 
+            
+            var returned = original.apply(this, arguments);
+            return returned;
+        }
+    });
+
+    Shimmer.wrap( exports , 'spawnSync', function (original) {
+        return function (command, args, options) { 
+            
+            var returned = original.apply(this, arguments);
+            return returned;
+        }
+    });
+
+    Shimmer.wrap( exports , 'execFile', function (original) {
+        return function (file, args, options, callback) { 
             
             var returned = original.apply(this, arguments);
             return returned;
