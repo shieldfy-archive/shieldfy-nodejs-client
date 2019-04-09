@@ -1,7 +1,5 @@
 const asyncHooks = require('async_hooks');
 
-
-
 function hook(Client)
 {
     const transactions = new Map();

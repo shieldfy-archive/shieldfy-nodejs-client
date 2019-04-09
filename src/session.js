@@ -9,14 +9,20 @@ const Session = function(Client){
     //attach async hooks to Client->_currentRequest
     Async_hooks(Client);
 
+    const reqForResp = new Map();
+
     //hooking the main HTTP module
     Hook(['http'], function (exports, name, basedir) {
         Shimmer.wrap(exports && exports.Server && exports.Server.prototype, 'emit', function (original) {
             return function (event, req, res) {        
                 if (event === 'request') {
-                    Client._currentRequest = new Request()
+                    Client._currentRequest = new Request();
+                    req._shieldfyID = Client._currentRequest._id;
+                    res._shieldfyID = Client._currentRequest._id;
                     Client._currentRequest.start(req,res);
                     shieldfyHeaders(Client);
+
+                    reqForResp.set(Client._currentRequest._id,Client._currentRequest);
 
                     res.on('finish',function() {
                         try{
@@ -59,13 +65,11 @@ const Session = function(Client){
         });
 
         Shimmer.wrap(exports && exports.ServerResponse && exports.ServerResponse.prototype, 'write', function (original) {
-            return function (data) {
-                try {
-                    if(Client._currentRequest.isDanger()){
-                        arguments[0] = '';
-                    }
-    
-                }catch (e) {}
+            return function () {
+                var currentRequest = reqForResp.get(this._shieldfyID);                
+                if (currentRequest.isDanger()) {
+                    arguments[0] = '';
+                }
     
                 var returned = original.apply(this, arguments);
                 return returned;
@@ -74,16 +78,12 @@ const Session = function(Client){
 
         Shimmer.wrap(exports && exports.ServerResponse && exports.ServerResponse.prototype, 'end', function (original) {
             return function () {
-                try {
-                    if(Client._currentRequest.isDanger()){
-                        // try {
-                        //     // Client._currentRequest._$res.setHeader('Transfer-Encoding','identity');
-                        //     Client._currentRequest._$res.setHeader('Content-Type','text/html');
-                        // }catch (e) {}
-                        arguments[0] = Client._response.block();
-                    }
-                    Client._currentRequest.end();
-                }catch(e) {}
+                var currentRequest = reqForResp.get(this._shieldfyID);                
+                if (currentRequest.isDanger()) {
+                    arguments[0] = Client._response.block();
+                }
+                reqForResp.delete(this._shieldfyID);
+                
                 var returned = original.apply(this, arguments);
                 return returned;
             }

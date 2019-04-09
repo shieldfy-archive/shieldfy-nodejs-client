@@ -3,6 +3,7 @@ const cookie = require('cookie');
 const uuid = require('uuid');
 const Busboy = require('busboy');
 const { parse } = require('querystring');
+
 function Request()
 {
     this._id = uuid.v4();
@@ -24,7 +25,6 @@ function Request()
     this._$res = null; //the full response object 
 
     this._isDanger = false; //Is the request dangerous 
-    
 }
 
 Request.prototype.start = function(req, res, cb = false)
@@ -51,7 +51,6 @@ Request.prototype.start = function(req, res, cb = false)
             })
         }
     }
-
 }
 
 Request.prototype.getIp = function(req)
@@ -61,7 +60,6 @@ Request.prototype.getIp = function(req)
 
 Request.prototype._getPostData = function(req,cb)
 {
-    
     // check if the content type is multipart/form-data
     if(req.headers["content-type"].indexOf("multipart/form-data") !== -1)
     {
@@ -135,7 +133,6 @@ Request.prototype._prepareFormData = function(req,cb)
 
         req.pipe(busboy);
     }catch(e){ }
-    
 }
 
 /**
@@ -182,13 +179,11 @@ Request.prototype._extractUrl = function(req)
     };
 }
 
-
 Request.prototype.setRes = function(res)
 {
     this._$res = res;
     this._statusCode = res ? res.statusCode : '';
 }
-
 
 Request.prototype.setDanger = function(status)
 {
@@ -198,12 +193,6 @@ Request.prototype.setDanger = function(status)
 Request.prototype.isDanger = function()
 {
     return this._isDanger;
-}
-
-
-Request.prototype.end = function()
-{
-
 }
 
 Request.prototype.getParam = function()
