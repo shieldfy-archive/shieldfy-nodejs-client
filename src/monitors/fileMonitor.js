@@ -13,7 +13,7 @@ fileMonitor.prototype.run = function(Client)
 {
     let Packages = Object.keys(this._callbacks);
     Hook(Packages,  (exports, name, basedir) => {  
-        if(this._callbacks.hasOwnProperty(name) ){
+        if (this._callbacks.hasOwnProperty(name) ) {
             this._callbacks[name](Client, exports, name)
         }
         return exports;
@@ -24,7 +24,7 @@ fileMonitor.prototype.handleFile = function(Client,exports, name, version)
 {
     Shimmer.wrap( exports , 'readFile', function (original) {
         return function (path, callback) {
-            original(path,'utf8',function(err,data){
+            original(path,'utf8',function(err,data) {
                 wrapRead(path, Client);
             })
             var returned = original.apply(this, arguments);
@@ -72,12 +72,13 @@ fileMonitor.prototype.handleFile = function(Client,exports, name, version)
                     allFiles.forEach(file => {
                         // apply rule to file name
                         let paramValue = file['originalname']
-                        if(path.indexOf(paramValue) !== -1){
+                        if (path.indexOf(paramValue) !== -1) {
                             //Matched YAY
                             paramValue = new Normalizer(path).run();
-                            let JudgeParameters = Client._jury.use('files','FILENAME');
-                            let result = JudgeParameters.execute(paramValue);
-                            Client.sendToJail('file', result, new Error().stack);
+                            let Judge = Client._jury.use('files','FILENAME');
+                            if (Judge.execute(paramValue)) {
+                                Judge.sendToJail(new Error().stack);
+                            }
                         }
                     });
                 }
@@ -87,9 +88,10 @@ fileMonitor.prototype.handleFile = function(Client,exports, name, version)
                         var fileContent = arguments[1].toString();
                         if (fileContent) {
                             fileContent = new Normalizer(fileContent).run();
-                            let JudgeParameters = Client._jury.use('files','CONTENT');
-                            let result = JudgeParameters.execute(fileContent);
-                            Client.sendToJail('file', result, new Error().stack);
+                            let Judge = Client._jury.use('files','CONTENT');
+                            if (Judge.execute(fileContent)) {
+                                Judge.sendToJail(new Error().stack);
+                            }
                         }
                         var returned = original.apply(this, arguments);
                         return returned;
@@ -180,25 +182,27 @@ function wrapRead(path, Client)
         try {
             let requestPath = Client._currentRequest._url.uri;
             let requestParams = Client._currentRequest.getParam();
-            if(requestPath || !(Object.keys(requestParams).length === 0 && requestParams.constructor === Object)){
+            if (requestPath || !(Object.keys(requestParams).length === 0 && requestParams.constructor === Object)) {
                 // apply file(target: parameters) rules on request parameter
-                for(let param in requestParams){
-                    let paramValue = requestParams[param]
-                    if(isParamInPath(paramValue, path)){
+                for (let param in requestParams) {
+                    let paramValue = requestParams[param];
+                    if (isParamInPath(paramValue, path)) {
                         //Matched YAY
                         paramValue = new Normalizer(path).run();
-                        let JudgeParameters = Client._jury.use('files','PARAMETERS');
-                        let result = JudgeParameters.execute(paramValue);
-                        Client.sendToJail('file', result, new Error().stack);
+                        let Judge = Client._jury.use('files','PARAMETERS');
+                        if (Judge.execute(paramValue)) {
+                            Judge.sendToJail(new Error().stack);
+                        }
                     }
                 }
                 // apply file(target: url) rules on uri
-                if(path.indexOf(requestPath) !== -1){
+                if (path.indexOf(requestPath) !== -1) {
                     //Matched YAY
                     paramValue = new Normalizer(path).run();
-                    let JudgeUrl = Client._jury.use('files','URL');
-                    let result = JudgeUrl.execute(paramValue);
-                    Client.sendToJail('file', result, new Error().stack);
+                    let Judge = Client._jury.use('files', 'URL');
+                    if (Judge.execute(paramValue)) {
+                        Judge.sendToJail(new Error().stack);
+                    }
                 }
             }
         }catch(e) {}
@@ -212,12 +216,13 @@ function wrapWrite(path, data, Client){
             allFiles.forEach(file => {
                 // apply rule to file name
                 let paramValue = file['originalname']
-                if(isParamInPath(paramValue, path)){
+                if (isParamInPath(paramValue, path)) {
                     //Matched YAY
                     paramValue = new Normalizer(path).run();
-                    let JudgeParameters = Client._jury.use('files','FILENAME');
-                    let result = JudgeParameters.execute(paramValue);
-                    Client.sendToJail('file', result, new Error().stack);
+                    let Judge = Client._jury.use('files','FILENAME');
+                    if (Judge.execute(paramValue)) {
+                        Judge.sendToJail(new Error().stack);
+                    }
                 }
             });
         }
@@ -225,9 +230,10 @@ function wrapWrite(path, data, Client){
         var fileContent = data.toString();
         if (fileContent) {
             fileContent = new Normalizer(fileContent).run();
-            let JudgeParameters = Client._jury.use('files','CONTENT');
-            let result = JudgeParameters.execute(fileContent);
-            Client.sendToJail('file', result, new Error().stack);
+            let Judge = Client._jury.use('files','CONTENT');
+            if (Judge.execute(fileContent)) {
+                Judge.sendToJail(new Error().stack);
+            }
         }
     }
 }

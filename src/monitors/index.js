@@ -1,7 +1,7 @@
 const MonitorsList = [
     'db',
     'memory',
-   // 'file',
+    'file',
     // 'execution',
     //'view',
   //  'ssrf',
