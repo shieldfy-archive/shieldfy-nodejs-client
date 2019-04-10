@@ -1,6 +1,6 @@
 const MonitorsList = [
     'db',
-   // 'memory',
+    'memory',
    // 'file',
     // 'execution',
     //'view',
