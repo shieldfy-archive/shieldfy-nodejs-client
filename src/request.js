@@ -4,10 +4,10 @@ const uuid = require('uuid');
 const Busboy = require('busboy');
 const { parse } = require('querystring');
 
-function Request()
+function Request(sessionId)
 {
     this._id = uuid.v4();
-
+    this._sessionId = sessionId;
     this._statusCode = null; //the status code extracted from the response;
     // score of the request
     this._score = 0; //current request score
@@ -53,6 +53,15 @@ Request.prototype.start = function(req, res, cb = false)
     }
 }
 
+/**
+ * Request is infected , Ending the request 
+ */
+Request.prototype.end = function(incidentId)
+{
+    return require('./respond').block(incidentId,this._$res);
+}
+
+
 Request.prototype.getIp = function(req)
 {
     return (req.headers['x-forwarded-for'] || '').split(',')[0] || req.connection.remoteAddress;
@@ -81,6 +90,7 @@ Request.prototype._getPostData = function(req,cb)
         });
     }
 }
+
 
 /**
  * extract the data from the form-data

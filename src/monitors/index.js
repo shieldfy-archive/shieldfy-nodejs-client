@@ -1,10 +1,10 @@
 const MonitorsList = [
     'db',
-    'memory',
-    'file',
+   // 'memory',
+   // 'file',
     // 'execution',
-    'view',
-    'ssrf',
+    //'view',
+  //  'ssrf',
 ];
 const monitors = function(Client)
 {
