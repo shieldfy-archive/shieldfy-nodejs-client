@@ -35,8 +35,8 @@ shieldfy.start();
 
 `.env` File
 ```js
-appKey = "yourAppKey"
-appSecret = "YourAppSecret"
+shieldfyAppKey = "yourAppKey"
+shieldfyAppSecret = "YourAppSecret"
 ```
 
 ### NOTE: You should require Shieldfy in the main file at first before any other package or module in order to SDK work correctly.

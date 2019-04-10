@@ -1,8 +1,8 @@
 var fs = require('fs');
 
-function StackCollector(stack)
+function StackCollector()
 {
-    this.stack= stack;
+    
 }
 /**
  * Example Input
@@ -30,9 +30,9 @@ function StackCollector(stack)
 
  // var stack=" Error\n    at module.exports (/home/eslam/Code/nodejs/shieldfy/lib/collectors/stackCollector.js:27:25)\n    at Function.from (/home/eslam/Code/nodejs/shieldfy/lib/monitors/memoryMonitor.js:27:25)\n    at Server.requestHandler (/home/eslam/Code/nodejs/simple.js:29:20)\n    at emitTwo (events.js:126:13)\n    at Server.emit (events.js:214:7)\n    at Server.<anonymous> (/home/eslam/Code/nodejs/shieldfy/lib/session.js:61:35)\n    at parserOnIncoming (_http_server.js:619:12)\n    at HTTPParser.parserOnHeadersComplete (_http_common.js:112:17)"
 
-StackCollector.prototype.parse = function(callback)
+StackCollector.prototype.parse = function(stack, callback)
 {
-    var parsedStack= getParsedStack(this.stack);
+    var parsedStack= getParsedStack(stack);
     var vulnerableLine =getVulnerableLine(parsedStack);
     // var functionName= vulnerableLine[0];
     var path= vulnerableLine[1];
@@ -182,4 +182,4 @@ function getVulnerableLine(stackArray)
     return vulnerableLines[0];
 }
 
-module.exports = StackCollector;
+module.exports = new StackCollector();
