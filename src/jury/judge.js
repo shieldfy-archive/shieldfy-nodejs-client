@@ -59,7 +59,7 @@ Judge.prototype.sendToJail = function(stack)
 {
     this._currentRequest.setDanger(true);
     this._currentRequest.end(this._incidentId);
-    new StackCollector(stack).parse((codeInfo) => {  
+    StackCollector.parse(stack,(codeInfo) => {  
         this.reportThreat(codeInfo);
     });
 }
