@@ -1,6 +1,7 @@
 const uuidv4 = require('uuid/v4');
 const StackCollector = require('../collectors/stackCollector')
-const BLOCKTHREHOLD = 50;
+const BLOCKTHREHOLD = 70;
+
 /**
  * New judge for every request(Case)
  * @param Object rules 
@@ -20,7 +21,7 @@ function Judge(monitor,rules,request,http){
 
 /**
  * @param value | string
- * @return result | mixed ( false | Object rule info)
+ * @return result | boolean
  */
 Judge.prototype.execute = function(value)
 {
@@ -41,7 +42,6 @@ Judge.prototype.execute = function(value)
         }
     }
 
-    console.log('Testing' , result.score);
     if(result.score >= BLOCKTHREHOLD){
         this._result = result;
         return true; //infected , dangerous
@@ -53,7 +53,6 @@ Judge.prototype.execute = function(value)
 
 Judge.prototype.sendToJail = function(stack)
 {
-   // console.loog('Sending to jail');
     if (this._result) {        
         this._currentRequest.setDanger(true);
         this._currentRequest.end(this._incidentId);
@@ -65,7 +64,7 @@ Judge.prototype.sendToJail = function(stack)
 
 Judge.prototype.reportThreat = function(result, codeInfo)
 {
-    this._http._api.trigger('session/threat', {
+    this._http.trigger('session/threat', {
         incidentId: this._incidentId,
         host: this._currentRequest._headers.host,
         sessionId: this._currentRequest._sessionId,

@@ -8,7 +8,6 @@ const Block = function()
 Block.prototype.run = function(incidentId, res)
 {
     if(res.finished) {
-        console.log('request is finished');
         return false; // request is alredy finished
     }
 

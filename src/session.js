@@ -114,7 +114,6 @@ function exposeShieldfyHeaders(res,Client)
     return;
 }
 
-//TODO: is signature used any where else ??
 function getSignature(Client)
 {
     if (Client._config.appKey && Client._config.appSecret) {
