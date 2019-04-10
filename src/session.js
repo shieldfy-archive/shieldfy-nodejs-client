@@ -10,6 +10,15 @@ const Session = function(Client) {
     Async_hooks(Client);
 
     const reqForResp = new Map();
+    let signature = (() =>
+    {
+        if (Client._config.appKey && Client._config.appSecret) {
+            let signature = CryptoJS.HmacSHA256(Client._config.appKey, Client._config.appSecret).toString();
+        } else {
+            let signature = "invalid signature";
+        }
+        return signature;
+    })();
 
     //hooking the main HTTP module
     Hook(['http'], function (exports, name, basedir) {
@@ -24,8 +33,7 @@ const Session = function(Client) {
 
                     reqForResp.set(Client._currentRequest._id,Client._currentRequest);
 
-                    //TODO: remove client by set the signatue is local
-                    exposeShieldfyHeaders(res,Client);
+                    exposeShieldfyHeaders(res);
                     
                     res.on('finish',function() {
                         if (Client._currentRequest) { //if _currentRequest exists
@@ -85,28 +93,12 @@ const Session = function(Client) {
         });
         return exports;
     });
-        
-}
 
-function exposeShieldfyHeaders(res,Client)
-{
-    res.setHeader('X-Web-Shield', 'ShieldfyWebShield');
-    if (Client._config.signature) {
-        res.setHeader('X-Shieldfy-Signature', Client._config.signature); 
-    } else {
-        res.setHeader('X-Shieldfy-Signature', getSignature(Client)); 
-    }
-    return;
-}
-
-function getSignature(Client)
-{
-    if (Client._config.appKey && Client._config.appSecret) {
-        Client._config.signature = CryptoJS.HmacSHA256(Client._config.appKey, Client._config.appSecret).toString();
-    } else {
-        Client._config.signature = "invalid signature";
-    }
-    return Client._config.signature;
+    function exposeShieldfyHeaders(res)
+    {
+        res.setHeader('X-Web-Shield', 'ShieldfyWebShield');
+        res.setHeader('X-Shieldfy-Signature', signature); 
+    }  
 }
 
 module.exports = Session;
