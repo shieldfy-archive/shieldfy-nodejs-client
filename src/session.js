@@ -4,7 +4,7 @@ const Async_hooks = require('./asyncHooks/core');
 const Request = require('./request');
 const CryptoJS = require("crypto-js");
 
-const Session = function(Client){
+const Session = function(Client) {
 
     //attach async hooks to Client->_currentRequest
     Async_hooks(Client);
@@ -17,37 +17,32 @@ const Session = function(Client){
             return function (event, req, res) {        
                 if (event === 'request') {
 
-                    console.log('calling emit');
                     Client._currentRequest = new Request(Client._sessionId);
                     req._shieldfyID = Client._currentRequest._id;
                     res._shieldfyID = Client._currentRequest._id;
                     Client._currentRequest.start(req,res);
-                    
 
                     reqForResp.set(Client._currentRequest._id,Client._currentRequest);
-                    //console.log(reqForResp);    
 
+                    //TODO: remove client by set the signatue is local
                     exposeShieldfyHeaders(res,Client);
                     
                     res.on('finish',function() {
-                        if(Client._currentRequest){ //if _currentRequest exists
+                        if (Client._currentRequest) { //if _currentRequest exists
                             Client._currentRequest.setRes(res);
                         }  
                     });
-                }      
-                let returned = original.apply(this, arguments)
+                }   
+
+                let returned = original.apply(this, arguments);
                 return returned;
             };
         });
 
         Shimmer.wrap(exports && exports.ServerResponse && exports.ServerResponse.prototype, 'setHeader', function (original) {
             return function () {
-                //TODO: remove X-Powered-By
-                // let currentRequest = reqForResp.get(this._shieldfyID);  
-                // console.log('calling setHeader',arguments);              
                 if (this.finished) {
-                    //console.log('disable it , request is finished')
-                    return false; //disable 
+                    return; //disable 
                 }
                 
                 let returned = original.apply(this, arguments);
@@ -57,26 +52,19 @@ const Session = function(Client){
 
         Shimmer.wrap(exports && exports.ServerResponse && exports.ServerResponse.prototype, 'writeHead', function (original) {
             return function () {
-                // let currentRequest = reqForResp.get(this._shieldfyID); 
-                // console.log('calling writeHead',arguments);               
                 if (this.finished) {
-                    return false; //disable 
+                    return; //disable 
                 }
                 
                 let returned = original.apply(this, arguments);
                 return returned;
-
-               
             };
         });
 
         Shimmer.wrap(exports && exports.ServerResponse && exports.ServerResponse.prototype, 'write', function (original) {
-            return function () {
-                // let currentRequest = reqForResp.get(this._shieldfyID);
-                 
-                // console.log('calling write');               
+            return function () {                 
                 if (this.finished) {
-                    return false; //disable 
+                    return; //disable 
                 }
                 
                 let returned = original.apply(this, arguments);
@@ -86,11 +74,8 @@ const Session = function(Client){
         
         Shimmer.wrap(exports && exports.ServerResponse && exports.ServerResponse.prototype, 'end', function (original) {
             return function () {
-                // let currentRequest = reqForResp.get(this._shieldfyID);   
-                // console.log('calling end');   
-                // console.log(new Error().stack);            
                 if (this.finished) {
-                    return false; //disable 
+                    return; //disable 
                 }
                 reqForResp.delete(this._shieldfyID);
                 

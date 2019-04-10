@@ -14,6 +14,7 @@ Install.prototype.run = function(client, callback = false)
             https: '1',
             lang: 'nodeJs',
             sdk_version: this.client._config.sdkVersion,
+            info:  this.client._info
         }, 
         (body) => {
             if (body.status == "error") {
@@ -31,7 +32,7 @@ Install.prototype.run = function(client, callback = false)
                 }
         
                 if (callback !== false) {
-                    callback(client, allRules);
+                    callback(allRules);
                 }
             }
         }

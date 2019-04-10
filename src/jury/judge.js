@@ -1,18 +1,21 @@
 const uuidv4 = require('uuid/v4');
-const StackCollector = require('../collectors/stackCollector')
+const StackCollector = require('../collectors/stackCollector');
 const BLOCKTHREHOLD = 70;
 
 /**
  * New judge for every request(Case)
- * @param Object rules 
+ * @param string monitor
+ * @param Object rules
+ * @param Object request
+ * @param Object http
  */
-function Judge(monitor,rules,request,http){
+function Judge(monitor, rules, request, http) {
     this._monitorName = monitor;
     this._rules = rules;
     this._currentRequest = request;
     this._http = http;
 
-    this._incidentId = uuidv4(); //assign case ID
+    this._incidentId = '';
     this._result = {
         score: 0,
         rulesIds: []
@@ -44,6 +47,7 @@ Judge.prototype.execute = function(value)
 
     if(result.score >= BLOCKTHREHOLD){
         this._result = result;
+        this._incidentId = uuidv4();
         return true; //infected , dangerous
     }
 
@@ -53,25 +57,23 @@ Judge.prototype.execute = function(value)
 
 Judge.prototype.sendToJail = function(stack)
 {
-    if (this._result) {        
-        this._currentRequest.setDanger(true);
-        this._currentRequest.end(this._incidentId);
-        new StackCollector(stack).parse((codeInfo) => {            
-            this.reportThreat(this._result, codeInfo);
-        });
-    }
+    this._currentRequest.setDanger(true);
+    this._currentRequest.end(this._incidentId);
+    new StackCollector(stack).parse((codeInfo) => {  
+        this.reportThreat(codeInfo);
+    });
 }
 
-Judge.prototype.reportThreat = function(result, codeInfo)
+Judge.prototype.reportThreat = function(codeInfo)
 {
     this._http.trigger('session/threat', {
         incidentId: this._incidentId,
         host: this._currentRequest._headers.host,
         sessionId: this._currentRequest._sessionId,
         monitor: this._monitorName,
-        severity: parseScore(result.score),
+        severity: parseScore(this._result.score),
         charge: {
-            'rulesIds':result.rulesIds
+            'rulesIds':this._result.rulesIds
         },
         request: {
             method: this._currentRequest._method,
@@ -94,7 +96,7 @@ Judge.prototype.reportThreat = function(result, codeInfo)
                 content: codeInfo.code
             }
         },
-        response: parseScore(result.score) === 'high'? 'block' : 'pass',
+        response: parseScore(this._result.score) === 'high'? 'block' : 'pass',
         lang: 'nodejs'
     });
 }

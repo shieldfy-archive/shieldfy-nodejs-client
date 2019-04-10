@@ -7,16 +7,14 @@ const Block = function()
 
 Block.prototype.run = function(incidentId, res)
 {
-    if(res.finished) {
-        return false; // request is alredy finished
+    if (res.finished) {
+        return; // request is alredy finished
     }
 
     res.writeHead(403);
     res.write(this.blockScreen.replace('{incidentId}', incidentId));
     res.end();
     res.finished = true;
-
-    return true;
 }
 
 
