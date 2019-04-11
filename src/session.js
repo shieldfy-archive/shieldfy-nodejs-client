@@ -13,11 +13,11 @@ const Session = function(Client) {
     let signature = (() =>
     {
         if (Client._config.appKey && Client._config.appSecret) {
-            let signature = CryptoJS.HmacSHA256(Client._config.appKey, Client._config.appSecret).toString();
+            _signature = CryptoJS.HmacSHA256(Client._config.appKey, Client._config.appSecret).toString();
         } else {
-            let signature = "invalid signature";
-        }
-        return signature;
+            _signature = "invalid signature";
+        }        
+        return _signature;
     })();
 
     //hooking the main HTTP module
