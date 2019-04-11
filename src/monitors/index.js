@@ -2,10 +2,11 @@ const MonitorsList = [
     'db',
     'memory',
     'file',
-    // 'execution',
-    //'view',
-  //  'ssrf',
+    'execution',
+    // 'view',
+    // 'ssrf',
 ];
+
 const monitors = function(Client)
 {
     MonitorsList.forEach(monitor => {
