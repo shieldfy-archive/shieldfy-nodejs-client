@@ -25,8 +25,7 @@ executionMonitor.prototype.childProcess = function(Client,exports, name, version
     Shimmer.wrap( exports , 'exec', function (original) {
         return function (command, options, callback) { 
             if (wrapExecution(Client, command)) {
-                command = "SHIELDFY";
-                // return;
+                return exports;
             }
             
             var returned = original.apply(this, arguments);
@@ -37,8 +36,7 @@ executionMonitor.prototype.childProcess = function(Client,exports, name, version
     Shimmer.wrap( exports , 'execSync', function (original) {
         return function (command, options) { 
             if (wrapExecution(Client, command)) {
-                command = "SHIELDFY";
-                // return;
+                return '';
             }
             
             var returned = original.apply(this, arguments);
@@ -50,8 +48,7 @@ executionMonitor.prototype.childProcess = function(Client,exports, name, version
         return function (command, args, options) { 
             // use args in applying rules
             if (wrapExecution(Client, command)) {
-                command = "SHIELDFY";
-                // return;
+                return exports;
             }
             
             var returned = original.apply(this, arguments);
@@ -63,8 +60,15 @@ executionMonitor.prototype.childProcess = function(Client,exports, name, version
         return function (command, args, options) { 
             // use args in applying rules
             if (wrapExecution(Client, command)) {
-                command = "SHIELDFY";
-                // return;
+                return {
+                    pid : '',
+                    output : '',
+                    stdout : '',
+                    stderr : '',
+                    status : '',
+                    signal : '',
+                    error : undefined,
+                };
             }
             
             var returned = original.apply(this, arguments);
