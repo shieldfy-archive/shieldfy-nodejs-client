@@ -87,14 +87,15 @@ function wrapExecution(Client, command)
                 if (command.indexOf(paramValue) !== -1) {
                     //Matched YAY                            
                     let Judge = Client._jury.use('rce');
-                    let result = Judge.execute(paramValue);
-                    // TODO: stop execution by generate error
-                    Client.sendToJail('rce', result, new Error().stack);
-                    return result;
+                    if (Judge.execute(paramValue)) {
+                        Judge.sendToJail(new Error().stack);
+                        return true;
+                    }
                 }
             }
         }
     }
+    return false;
 }
 
 module.exports = new executionMonitor;
