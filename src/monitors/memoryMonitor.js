@@ -24,8 +24,9 @@ memoryMonitor.prototype.run = function(Client)
                             if(paramValue === value){
                                 
                                 let Judge = Client._jury.use('memory');
-                                let result = Judge.execute(paramValue);
-                                Client.sendToJail('memory', result, new Error().stack);
+                                if(Judge.execute(paramValue)){
+                                    Judge.sendToJail(new Error().stack);
+                                }
                             }
                         }
                     }

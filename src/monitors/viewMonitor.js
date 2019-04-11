@@ -60,9 +60,10 @@ viewMonitor.prototype.handleExpress = function(Client, exports, name, version) {
                                     let paramValue = requestParams[param];
                                     if (isReflectedXssVector(paramValue, response)) {
                                         //Matched YAY
-                                        let JudgeParameters = Client._jury.use('view');
-                                        let result = JudgeParameters.execute(paramValue);
-                                        Client.sendToJail('view', result, new Error().stack);
+                                        let Judge = Client._jury.use('view');
+                                        if(Judge.execute(paramValue)){
+                                            Judge.sendToJail(new Error().stack);
+                                        }
                                     }
                                 }
                             }
@@ -81,9 +82,10 @@ viewMonitor.prototype.handleExpress = function(Client, exports, name, version) {
                                     let paramValue = requestParams[param];
                                     if (isReflectedXssVector(paramValue, response)) {
                                         //Matched YAY
-                                        let JudgeParameters = Client._jury.use('view');
-                                        let result = JudgeParameters.execute(paramValue);
-                                        Client.sendToJail('view', result, new Error().stack);
+                                        let Judge = Client._jury.use('view');
+                                        if(Judge.execute(paramValue)){
+                                            Judge.sendToJail(new Error().stack);
+                                        }
                                     }
                                 }
                             }
@@ -102,9 +104,10 @@ viewMonitor.prototype.handleExpress = function(Client, exports, name, version) {
                                     let paramValue = requestParams[param];
                                     if (isReflectedXssVector(paramValue, response)) {
                                         //Matched YAY
-                                        let JudgeParameters = Client._jury.use('view');
-                                        let result = JudgeParameters.execute(paramValue);
-                                        Client.sendToJail('view', result, new Error().stack);
+                                        let Judge = Client._jury.use('view');
+                                        if(Judge.execute(paramValue)){
+                                            Judge.sendToJail(new Error().stack);
+                                        }
                                     }
                                 }
                             }

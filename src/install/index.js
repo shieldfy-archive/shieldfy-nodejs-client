@@ -3,17 +3,18 @@ var crypto = require("crypto");
 function Install(client, callback)
 {
     this.client = client;
-    this.api = client._http._api;
+    this.http = client._http;
     this.run(client, callback);
 }
 
 Install.prototype.run = function(client, callback = false)
 {
-    this.api.trigger('install', {
+    this.http.trigger('install', {
             host: this.client._config.endPoint,
             https: '1',
             lang: 'nodeJs',
             sdk_version: this.client._config.sdkVersion,
+            info:  this.client._info
         }, 
         (body) => {
             if (body.status == "error") {
@@ -31,7 +32,7 @@ Install.prototype.run = function(client, callback = false)
                 }
         
                 if (callback !== false) {
-                    callback(client, allRules);
+                    callback(allRules);
                 }
             }
         }

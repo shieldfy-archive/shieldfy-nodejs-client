@@ -84,14 +84,13 @@ DBMonitor.prototype.mongoDB = function(Client, exports,name) {
                         let paramValue = requestParams[param];
                         
                         if(value.indexOf(paramValue) !== -1){
-                            
                             //Matched YAY
                             paramValue = new Normalizer(paramValue).run();
-                            
-                          
+
                             let Judge = Client._jury.use('db','nosqli');
-                            let result = Judge.execute(paramValue);
-                            Client.sendToJail('db', result, new Error().stack);
+                            if(Judge.execute(paramValue)){
+                                Judge.sendToJail(new Error().stack);
+                            }
                         }
                     }
                 }
@@ -125,9 +124,11 @@ function wrapQuery(Client, connection)
                             if (query.indexOf(paramValue) !== -1) {
                                 //Matched YAY
                                 paramValue = new Normalizer(paramValue).run();
+
                                 let Judge = Client._jury.use('db','sqli');
-                                let result = Judge.execute(paramValue);
-                                Client.sendToJail('db', result, new Error().stack);
+                                if(Judge.execute(paramValue)){
+                                    Judge.sendToJail(new Error().stack);
+                                }
                             }
                         }
                     }
@@ -141,7 +142,7 @@ function wrapQuery(Client, connection)
 function wrapQueryObject(query, requestParams, Client)
 {
     for (const key in query) {
-        sqlQuery= query[key];
+        let sqlQuery = query[key];
         
         for (let param in requestParams) {
             
@@ -149,9 +150,11 @@ function wrapQueryObject(query, requestParams, Client)
             if (sqlQuery.indexOf(paramValue) !== -1) {
                 //Matched YAY
                 paramValue = new Normalizer(paramValue).run();
+
                 let Judge = Client._jury.use('db','sqli');
-                let result = Judge.execute(paramValue);
-                Client.sendToJail('db', result, new Error().stack);
+                if(Judge.execute(paramValue)){
+                    Judge.sendToJail(new Error().stack);
+                }
             }
         }
     }
@@ -175,9 +178,11 @@ function wrapExecute(Client, connection)
                         if (query.indexOf(paramValue) !== -1) {
                             //Matched YAY
                             paramValue = new Normalizer(paramValue).run();
+
                             let Judge = Client._jury.use('db','sqli');
-                            let result = Judge.execute(paramValue);
-                            Client.sendToJail('db', result, new Error().stack);
+                            if(Judge.execute(paramValue)){
+                                Judge.sendToJail(new Error().stack);
+                            }
                         }
                     }
                 }

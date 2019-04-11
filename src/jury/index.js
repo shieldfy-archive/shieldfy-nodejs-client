@@ -1,9 +1,10 @@
 const Rule = require('./rule');
+const Judge = require('./judge');
 
-function Jury(Rules)
+function Jury(Client, Rules)
 {
     this._rules = {};
-
+    this._client = Client;
     //build rules objects
     for (const type in Rules) {
         
@@ -13,64 +14,25 @@ function Jury(Rules)
         for (const RuleId in RulesContent) {
             this._rules[type][RuleId] = new Rule(RuleId,RulesContent[RuleId]);
         }
-
     }
     
 }
 
-Jury.prototype.use = function(use, target ='')
+Jury.prototype.use = function(monitor, target ='')
 {
     // this section will apply if we won't use all rules of specific type
     // EX: target='CONTENT'
     if (target) {
         var targetedRules = {};
-        for (const id in this._rules[use]) {
-            if (this._rules[use][id]['_target'] === target) {
-                targetedRules[id]=this._rules[use][id];
+        for (const id in this._rules[monitor]) {
+            if (this._rules[monitor][id]['_target'] === target) {
+                targetedRules[id]=this._rules[monitor][id];
             }
         }
-        return new Judge(targetedRules);
+        return new Judge(monitor,targetedRules,this._client._currentRequest,this._client._http);
     }
 
-    return new Judge(this._rules[use]);
-}
-
-
-/**
- * New judge for every request(Case)
- * @param Object rules 
- */
-function Judge(rules){
-    this._rules = rules;
-}
-
-/**
- * @param value | string
- * @return result | mixed ( false | Object rule info)
- */
-Judge.prototype.execute = function(value)
-{
-    let result = {
-        score: 0,
-        rulesIds: []
-    };
-    //iterate the rules in use
-    for (rule in this._rules) {
-
-        let _rule = this._rules[rule];
-        //run the rule
-        let ruleInfo = _rule.run(value);
-        if (ruleInfo) {
-            result.score += parseInt(ruleInfo.score);
-            result.rulesIds.push(ruleInfo.id);
-        }
-    }
-
-    if(result.score !== 0){
-        return result;
-    }
-
-    return false; //its clean , return false;
+    return new Judge(monitor,this._rules[monitor],this._client._currentRequest,this._client._http);
 }
 
 module.exports = Jury;
