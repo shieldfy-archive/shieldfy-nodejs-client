@@ -48,60 +48,60 @@ fileMonitor.prototype.handleFile = function(Client,exports, name, version)
         }
     });
 
-    Shimmer.wrap( exports , 'writeFile', function (original) {
-        return function (path, data, callback) {
-            wrapWrite(path, data, Client);
-            var returned = original.apply(this, arguments);
-            return returned;
-        };
-    });
+    // Shimmer.wrap( exports , 'writeFile', function (original) {
+    //     return function (path, data, callback) {
+    //         wrapWrite(path, data, Client);
+    //         var returned = original.apply(this, arguments);
+    //         return returned;
+    //     };
+    // });
     
-    Shimmer.wrap( exports , 'writeFileSync', function (original) {
-        return function (path, data) {
-            wrapWrite(path, data, Client);
-            var returned = original.apply(this, arguments);
-            return returned;
-        };
-    });
+    // Shimmer.wrap( exports , 'writeFileSync', function (original) {
+    //     return function (path, data) {
+    //         wrapWrite(path, data, Client);
+    //         var returned = original.apply(this, arguments);
+    //         return returned;
+    //     };
+    // });
 
-    Shimmer.wrap( exports , 'createWriteStream', function (original) {
-        return function (path) { 
-            if (Client._currentRequest) {
-                let allFiles = Client._currentRequest._files;
-                if (allFiles.length > 0) {
-                    allFiles.forEach(file => {
-                        // apply rule to file name
-                        let paramValue = file['originalname']
-                        if (path.indexOf(paramValue) !== -1) {
-                            //Matched YAY
-                            paramValue = new Normalizer(path).run();
-                            let Judge = Client._jury.use('files','FILENAME');
-                            if (Judge.execute(paramValue)) {
-                                Judge.sendToJail();
-                            }
-                        }
-                    });
-                }
-                // apply rule to file content
-                Shimmer.wrap( this , 'write', function (original) {
-                    return function () { 
-                        var fileContent = arguments[1].toString();
-                        if (fileContent) {
-                            fileContent = new Normalizer(fileContent).run();
-                            let Judge = Client._jury.use('files','CONTENT');
-                            if (Judge.execute(fileContent)) {
-                                Judge.sendToJail();
-                            }
-                        }
-                        var returned = original.apply(this, arguments);
-                        return returned;
-                    }
-                });   
-            }
-            var returned = original.apply(this, arguments);
-            return returned;
-        }
-    });
+    // Shimmer.wrap( exports , 'createWriteStream', function (original) {
+    //     return function (path) { 
+    //         if (Client._currentRequest) {
+    //             let allFiles = Client._currentRequest._files;
+    //             if (allFiles.length > 0) {
+    //                 allFiles.forEach(file => {
+    //                     // apply rule to file name
+    //                     let paramValue = file['originalname']
+    //                     if (path.indexOf(paramValue) !== -1) {
+    //                         //Matched YAY
+    //                         paramValue = new Normalizer(path).run();
+    //                         let Judge = Client._jury.use('files','FILENAME');
+    //                         if (Judge.execute(paramValue)) {
+    //                             Judge.sendToJail();
+    //                         }
+    //                     }
+    //                 });
+    //             }
+    //             // apply rule to file content
+    //             Shimmer.wrap( this , 'write', function (original) {
+    //                 return function () { 
+    //                     var fileContent = arguments[1].toString();
+    //                     if (fileContent) {
+    //                         fileContent = new Normalizer(fileContent).run();
+    //                         let Judge = Client._jury.use('files','CONTENT');
+    //                         if (Judge.execute(fileContent)) {
+    //                             Judge.sendToJail();
+    //                         }
+    //                     }
+    //                     var returned = original.apply(this, arguments);
+    //                     return returned;
+    //                 }
+    //             });   
+    //         }
+    //         var returned = original.apply(this, arguments);
+    //         return returned;
+    //     }
+    // });
     return exports;
 }
 
