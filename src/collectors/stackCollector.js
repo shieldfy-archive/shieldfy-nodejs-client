@@ -1,63 +1,43 @@
-var fs = require('fs');
+const fs = require('fs');
+const stackman = require('stackman')();
 
 function StackCollector()
 {
     
 }
 
-StackCollector.prototype.parse = function(stack, callback)
+StackCollector.prototype.parse = function(err, callback)
 {
-    var parsedStack= getParsedStack(stack);
-    var vulnerableLine =getVulnerableLine(parsedStack);
-    // var functionName= vulnerableLine[0];
-    var path= vulnerableLine[1];
-    var lineNumber= parseInt(vulnerableLine[2]);
-    lineCollector(path, lineNumber, function(codeContent) {
-        callback({
-            code: codeContent,
-            // errStack: parsedStack,
-            lineNumber: lineNumber,
-            path: path
+    getParsedStack((parsedStack) => {
+        var vulnerableLine =getVulnerableLine(parsedStack);
+        var lineNumber= vulnerableLine[0];
+        var path= vulnerableLine[1];
+        lineCollector(path, lineNumber, function(codeContent) {
+            callback({
+                code: codeContent,
+                lineNumber: lineNumber,
+                path: path
+            });
         });
     });
 }
 
 
 /**
- * @param {string} stack
+ * @param {Function} cb
  */
-function getParsedStack(stack) {
-    stack = stack.split(" at ");//this is an array
-    stack.shift();//remove first line
-    // remove paths that contain 'shieldfy-nodejs-client'
-    while (stack[0].indexOf('shieldfy-nodejs-client') !== -1) {
-        stack.shift();
-    }
-    // stack.pop();//remove last line
-
-    //split the errorLog from the path
-    stack = stack.map(function (pharse) {
-        return pharse.trim().split(" (");
-    });
- 
-    for (var i = 0; i < stack.length; i++) {
-        
-        if (stack[i].length === 1) {
-            stack[i][1] = stack[i][0];
-            stack[i][0] = '';
+function getParsedStack(cb) {
+    stackman.callsites(new Error(), function (err, callsites) {
+        // if (err) throw err
+        var stack = [];
+        for (let index = 0; index < callsites.length; index++) {
+            stack[index] = [];
+            stack[index].push(callsites[index].getLineNumber());
+            stack[index].push(callsites[index].getFileName());
         }
-        var str = stack[i][1];
-
-        // stack[i][1]= str.match(/(.*)\)/)[1]; //remove right parenthes by regex
-        stack[i][1] = str.substring(0,str.length-1);//remove parentheses
-        
-        stack[i].push(str.match(/:([0-9]*):/)[1]); //get line no.
-        
-        // stack[i][1]= str.substring(0,str.indexOf(':')); //remove path
-        stack[i][1] = str.match(/(.*\.js)/)[1]; //remove path by regex
-    }
-
-    return stack;
+        cb(stack);
+        return
+    })
 }
 
  
@@ -153,7 +133,7 @@ function lineCollector(filename, line_no, cb)
 function getVulnerableLine(stackArray)
 {
     var vulnerableLines = stackArray.filter(element => {
-        if (element[1].indexOf('node_modules') === -1) {
+        if (element[1] && element[1].indexOf('node_modules') === -1 && element[1].indexOf('shieldfy-nodejs-client') === -1) {
             return element;
         }
     });
