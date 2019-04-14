@@ -2,7 +2,7 @@
 
 const Hook = require('require-in-the-middle');
 const Shimmer = require('shimmer');
-const isReflectedXssVector= require('./helper/viewCatchLogic');
+// const isReflectedXssVector= require('./helper/viewCatchLogic');
 const semver = require('semver');
 const fs = require('fs')
 const path = require('path')
@@ -59,7 +59,8 @@ viewMonitor.prototype.handleExpress = function(Client, exports, name, version) {
                             if (!(Object.keys(requestParams).length === 0 && requestParams.constructor === Object)) {
                                 for (let param in requestParams) {
                                     let paramValue = requestParams[param];
-                                    if (isReflectedXssVector(paramValue, response)) {
+                                    // if (isReflectedXssVector(paramValue, response)) {
+                                    if (response.indexOf(paramValue) !== -1) {
                                         //Matched YAY
                                         let Judge = Client._jury.use('view');
                                         if(Judge.execute(paramValue)){
@@ -82,7 +83,8 @@ viewMonitor.prototype.handleExpress = function(Client, exports, name, version) {
                             if (!(Object.keys(requestParams).length === 0 && requestParams.constructor === Object)) {
                                 for (let param in requestParams) {
                                     let paramValue = requestParams[param];
-                                    if (isReflectedXssVector(paramValue, response)) {
+                                    // if (isReflectedXssVector(paramValue, response)) {
+                                    if (response.indexOf(paramValue) !== -1) {
                                         //Matched YAY
                                         let Judge = Client._jury.use('view');
                                         if(Judge.execute(paramValue)){
@@ -105,7 +107,8 @@ viewMonitor.prototype.handleExpress = function(Client, exports, name, version) {
                             if (!(Object.keys(requestParams).length === 0 && requestParams.constructor === Object)) {
                                 for (let param in requestParams) {
                                     let paramValue = requestParams[param];
-                                    if (isReflectedXssVector(paramValue, response)) {
+                                    // if (isReflectedXssVector(paramValue, response)) {
+                                    if (response.indexOf(paramValue) !== -1) {
                                         //Matched YAY
                                         let Judge = Client._jury.use('view');
                                         if(Judge.execute(paramValue)){
