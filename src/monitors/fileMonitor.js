@@ -77,7 +77,7 @@ fileMonitor.prototype.handleFile = function(Client,exports, name, version)
                             paramValue = new Normalizer(path).run();
                             let Judge = Client._jury.use('files','FILENAME');
                             if (Judge.execute(paramValue)) {
-                                Judge.sendToJail(new Error().stack);
+                                Judge.sendToJail();
                             }
                         }
                     });
@@ -90,7 +90,7 @@ fileMonitor.prototype.handleFile = function(Client,exports, name, version)
                             fileContent = new Normalizer(fileContent).run();
                             let Judge = Client._jury.use('files','CONTENT');
                             if (Judge.execute(fileContent)) {
-                                Judge.sendToJail(new Error().stack);
+                                Judge.sendToJail();
                             }
                         }
                         var returned = original.apply(this, arguments);
@@ -177,35 +177,31 @@ function isParamInPath(param, path){
 function wrapRead(path, Client)
 {
     if (Client._currentRequest) {
-        // TODO: test and remove try
-        // this try catch statement for unit test perpose
-        try {
-            let requestPath = Client._currentRequest._url.uri;
-            let requestParams = Client._currentRequest.getParam();
-            if (requestPath || !(Object.keys(requestParams).length === 0 && requestParams.constructor === Object)) {
-                // apply file(target: parameters) rules on request parameter
-                for (let param in requestParams) {
-                    let paramValue = requestParams[param];
-                    if (isParamInPath(paramValue, path)) {
-                        //Matched YAY
-                        paramValue = new Normalizer(path).run();
-                        let Judge = Client._jury.use('files','PARAMETERS');
-                        if (Judge.execute(paramValue)) {
-                            Judge.sendToJail(new Error().stack);
-                        }
-                    }
-                }
-                // apply file(target: url) rules on uri
-                if (path.indexOf(requestPath) !== -1) {
+        let requestPath = Client._currentRequest._url.uri;
+        let requestParams = Client._currentRequest.getParam();
+        if (requestPath || !(Object.keys(requestParams).length === 0 && requestParams.constructor === Object)) {
+            // apply file(target: parameters) rules on request parameter
+            for (let param in requestParams) {
+                let paramValue = requestParams[param];
+                if (isParamInPath(paramValue, path)) {
                     //Matched YAY
                     paramValue = new Normalizer(path).run();
-                    let Judge = Client._jury.use('files', 'URL');
+                    let Judge = Client._jury.use('files','PARAMETERS');
                     if (Judge.execute(paramValue)) {
-                        Judge.sendToJail(new Error().stack);
+                        Judge.sendToJail();
                     }
                 }
             }
-        }catch(e) {}
+            // apply file(target: url) rules on uri
+            if (path.indexOf(requestPath) !== -1) {
+                //Matched YAY
+                paramValue = new Normalizer(path).run();
+                let Judge = Client._jury.use('files', 'URL');
+                if (Judge.execute(paramValue)) {
+                    Judge.sendToJail();
+                }
+            }
+        }
     }
 }
 
@@ -221,7 +217,7 @@ function wrapWrite(path, data, Client){
                     paramValue = new Normalizer(path).run();
                     let Judge = Client._jury.use('files','FILENAME');
                     if (Judge.execute(paramValue)) {
-                        Judge.sendToJail(new Error().stack);
+                        Judge.sendToJail();
                     }
                 }
             });
@@ -232,7 +228,7 @@ function wrapWrite(path, data, Client){
             fileContent = new Normalizer(fileContent).run();
             let Judge = Client._jury.use('files','CONTENT');
             if (Judge.execute(fileContent)) {
-                Judge.sendToJail(new Error().stack);
+                Judge.sendToJail();
             }
         }
     }

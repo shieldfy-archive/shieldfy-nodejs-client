@@ -6,7 +6,7 @@ function StackCollector()
     
 }
 
-StackCollector.prototype.parse = function(err, callback)
+StackCollector.prototype.parse = function(callback)
 {
     getParsedStack((parsedStack) => {
         var vulnerableLine =getVulnerableLine(parsedStack);

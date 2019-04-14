@@ -92,7 +92,7 @@ function wrapExecution(Client, command)
                     //Matched YAY                            
                     let Judge = Client._jury.use('rce');
                     if (Judge.execute(paramValue)) {
-                        Judge.sendToJail(new Error().stack);
+                        Judge.sendToJail();
                         return true;
                     }
                 }

@@ -89,7 +89,7 @@ DBMonitor.prototype.mongoDB = function(Client, exports,name) {
 
                             let Judge = Client._jury.use('db','nosqli');
                             if(Judge.execute(paramValue)){
-                                Judge.sendToJail(new Error().stack);
+                                Judge.sendToJail();
                             }
                         }
                     }
@@ -127,7 +127,7 @@ function wrapQuery(Client, connection)
 
                                 let Judge = Client._jury.use('db','sqli');
                                 if(Judge.execute(paramValue)){
-                                    Judge.sendToJail(new Error().stack);
+                                    Judge.sendToJail();
                                 }
                             }
                         }
@@ -153,7 +153,7 @@ function wrapQueryObject(query, requestParams, Client)
 
                 let Judge = Client._jury.use('db','sqli');
                 if(Judge.execute(paramValue)){
-                    Judge.sendToJail(new Error().stack);
+                    Judge.sendToJail();
                 }
             }
         }
@@ -181,7 +181,7 @@ function wrapExecute(Client, connection)
 
                             let Judge = Client._jury.use('db','sqli');
                             if(Judge.execute(paramValue)){
-                                Judge.sendToJail(new Error().stack);
+                                Judge.sendToJail();
                             }
                         }
                     }

@@ -63,7 +63,7 @@ viewMonitor.prototype.handleExpress = function(Client, exports, name, version) {
                                         //Matched YAY
                                         let Judge = Client._jury.use('view');
                                         if(Judge.execute(paramValue)){
-                                            Judge.sendToJail(new Error().stack);
+                                            Judge.sendToJail();
                                         }
                                     }
                                 }
@@ -86,7 +86,7 @@ viewMonitor.prototype.handleExpress = function(Client, exports, name, version) {
                                         //Matched YAY
                                         let Judge = Client._jury.use('view');
                                         if(Judge.execute(paramValue)){
-                                            Judge.sendToJail(new Error().stack);
+                                            Judge.sendToJail();
                                         }
                                     }
                                 }
@@ -109,7 +109,7 @@ viewMonitor.prototype.handleExpress = function(Client, exports, name, version) {
                                         //Matched YAY
                                         let Judge = Client._jury.use('view');
                                         if(Judge.execute(paramValue)){
-                                            Judge.sendToJail(new Error().stack);
+                                            Judge.sendToJail();
                                         }
                                     }
                                 }
