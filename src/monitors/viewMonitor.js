@@ -51,6 +51,7 @@ viewMonitor.prototype.handleExpress = function(Client, exports, name, version) {
                 return function (req, res, next) {
                     var _write = res.write;
                     res.write = function(){
+                        if(Client._currentRequest.isDanger()) return _write.apply(this,arguments);
                         // arguments
                         var response= arguments[0];
                         if (Client._currentRequest) {
@@ -73,6 +74,7 @@ viewMonitor.prototype.handleExpress = function(Client, exports, name, version) {
 
                     var _end = res.end;
                     res.end = function(){
+                        if(Client._currentRequest.isDanger()) return _end.apply(this,arguments);
                         // arguments
                         var response= arguments[0];
                         if (Client._currentRequest) {
@@ -95,6 +97,7 @@ viewMonitor.prototype.handleExpress = function(Client, exports, name, version) {
 
                     var _send = res.send;
                     res.send = function(){
+                        if(Client._currentRequest.isDanger()) return _send.apply(this,arguments);
                         // arguments
                         var response= arguments[0];
                         if (Client._currentRequest) {
