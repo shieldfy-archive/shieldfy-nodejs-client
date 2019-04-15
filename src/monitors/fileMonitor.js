@@ -72,9 +72,10 @@ fileMonitor.prototype.handleFile = function(Client,exports, name, version)
     //                 allFiles.forEach(file => {
     //                     // apply rule to file name
     //                     let paramValue = file['originalname']
+    //                      // replace index of by isParamInPath
     //                     if (path.indexOf(paramValue) !== -1) {
     //                         //Matched YAY
-    //                         paramValue = new Normalizer(path).run();
+    //                         paramValue = new Normalizer(paramValue).run();
     //                         let Judge = Client._jury.use('files','FILENAME');
     //                         if (Judge.execute(paramValue)) {
     //                             Judge.sendToJail();
@@ -185,7 +186,7 @@ function wrapRead(path, Client)
                 let paramValue = requestParams[param];
                 if (isParamInPath(paramValue, path)) {
                     //Matched YAY
-                    paramValue = new Normalizer(path).run();
+                    paramValue = new Normalizer(paramValue).run();
                     let Judge = Client._jury.use('files','PARAMETERS');
                     if (Judge.execute(paramValue)) {
                         Judge.sendToJail();
@@ -193,9 +194,10 @@ function wrapRead(path, Client)
                 }
             }
             // apply file(target: url) rules on uri
+            // shall i replace indexOf by isParamInPath
             if (path.indexOf(requestPath) !== -1) {
                 //Matched YAY
-                paramValue = new Normalizer(path).run();
+                paramValue = new Normalizer(requestPath).run();
                 let Judge = Client._jury.use('files', 'URL');
                 if (Judge.execute(paramValue)) {
                     Judge.sendToJail();
@@ -205,33 +207,33 @@ function wrapRead(path, Client)
     }
 }
 
-function wrapWrite(path, data, Client){
-    if (Client._currentRequest) {
-        let allFiles = Client._currentRequest._files;
-        if (allFiles.length > 0) {
-            allFiles.forEach(file => {
-                // apply rule to file name
-                let paramValue = file['originalname']
-                if (isParamInPath(paramValue, path)) {
-                    //Matched YAY
-                    paramValue = new Normalizer(path).run();
-                    let Judge = Client._jury.use('files','FILENAME');
-                    if (Judge.execute(paramValue)) {
-                        Judge.sendToJail();
-                    }
-                }
-            });
-        }
-        // apply rule to file content
-        var fileContent = data.toString();
-        if (fileContent) {
-            fileContent = new Normalizer(fileContent).run();
-            let Judge = Client._jury.use('files','CONTENT');
-            if (Judge.execute(fileContent)) {
-                Judge.sendToJail();
-            }
-        }
-    }
-}
+// function wrapWrite(path, data, Client){
+//     if (Client._currentRequest) {
+//         let allFiles = Client._currentRequest._files;
+//         if (allFiles.length > 0) {
+//             allFiles.forEach(file => {
+//                 // apply rule to file name
+//                 let paramValue = file['originalname']
+//                 if (isParamInPath(paramValue, path)) {
+//                     //Matched YAY
+//                     paramValue = new Normalizer(paramValue).run();
+//                     let Judge = Client._jury.use('files','FILENAME');
+//                     if (Judge.execute(paramValue)) {
+//                         Judge.sendToJail();
+//                     }
+//                 }
+//             });
+//         }
+//         // apply rule to file content
+//         var fileContent = data.toString();
+//         if (fileContent) {
+//             fileContent = new Normalizer(fileContent).run();
+//             let Judge = Client._jury.use('files','CONTENT');
+//             if (Judge.execute(fileContent)) {
+//                 Judge.sendToJail();
+//             }
+//         }
+//     }
+// }
 
 module.exports = new fileMonitor;
