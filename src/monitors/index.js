@@ -3,8 +3,8 @@ const MonitorsList = [
     'memory',
     'file',
     'execution',
-    // 'view',
-    // 'ssrf',
+    'view',
+    'ssrf',
 ];
 
 const monitors = function(Client)

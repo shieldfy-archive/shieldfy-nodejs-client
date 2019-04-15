@@ -11,7 +11,10 @@ Block.prototype.run = function(incidentId, res)
         return; // request is alredy finished
     }
 
-    res.writeHead(403);
+    // to prevent error generated from view monitor when calling end or write before set the headers
+    try {
+        res.writeHead(403);
+    } catch (e) { }
     res.write(this.blockScreen.replace('{incidentId}', incidentId));
     res.end();
     res.finished = true;

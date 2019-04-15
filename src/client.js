@@ -56,7 +56,6 @@ Client.prototype.start = function(opts)
     this._jury = new Jury(this, {}); //init jury without rules at first
     
     // send to api that is a new installation
-    // TODO: test installing
     Install(this, (rules) => {
         this._jury = new Jury(this, rules);
     });

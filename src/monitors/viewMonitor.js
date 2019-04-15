@@ -50,21 +50,23 @@ viewMonitor.prototype.handleExpress = function(Client, exports, name, version) {
             Shimmer.wrap(layer, 'handle', function (orig) {
                 return function (req, res, next) {
                     var _write = res.write;
-                    res.write = function(){
-                        if(Client._currentRequest.isDanger()) return _write.apply(this,arguments);
+                    res.write = function() {
                         // arguments
                         var response= arguments[0];
-                        if (Client._currentRequest) {
-                            let requestParams = Client._currentRequest.getParam();
-                            if (!(Object.keys(requestParams).length === 0 && requestParams.constructor === Object)) {
-                                for (let param in requestParams) {
-                                    let paramValue = requestParams[param];
-                                    // if (isReflectedXssVector(paramValue, response)) {
-                                    if (response.indexOf(paramValue) !== -1) {
-                                        //Matched YAY
-                                        let Judge = Client._jury.use('view');
-                                        if(Judge.execute(paramValue)){
-                                            Judge.sendToJail();
+                        if (response) {
+                            if (Client._currentRequest) {
+                                if (Client._currentRequest.isDanger()) return _write.apply(this,arguments);
+                                let requestParams = Client._currentRequest.getParam();
+                                if (!(Object.keys(requestParams).length === 0 && requestParams.constructor === Object)) {
+                                    for (let param in requestParams) {
+                                        let paramValue = requestParams[param];
+                                        // if (isReflectedXssVector(paramValue, response)) {
+                                        if (response.indexOf(paramValue) !== -1) {
+                                            //Matched YAY
+                                            let Judge = Client._jury.use('view');
+                                            if (Judge.execute(paramValue)) {
+                                                Judge.sendToJail();
+                                            }
                                         }
                                     }
                                 }
@@ -74,21 +76,23 @@ viewMonitor.prototype.handleExpress = function(Client, exports, name, version) {
                     }
 
                     var _end = res.end;
-                    res.end = function(){
-                        if(Client._currentRequest.isDanger()) return _end.apply(this,arguments);
+                    res.end = function() {                        
                         // arguments
                         var response= arguments[0];
-                        if (Client._currentRequest) {
-                            let requestParams = Client._currentRequest.getParam();
-                            if (!(Object.keys(requestParams).length === 0 && requestParams.constructor === Object)) {
-                                for (let param in requestParams) {
-                                    let paramValue = requestParams[param];
-                                    // if (isReflectedXssVector(paramValue, response)) {
-                                    if (response.indexOf(paramValue) !== -1) {
-                                        //Matched YAY
-                                        let Judge = Client._jury.use('view');
-                                        if(Judge.execute(paramValue)){
-                                            Judge.sendToJail();
+                        if (response) {
+                            if (Client._currentRequest) {
+                                if (Client._currentRequest.isDanger()) return _end.apply(this,arguments);
+                                let requestParams = Client._currentRequest.getParam();
+                                if (!(Object.keys(requestParams).length === 0 && requestParams.constructor === Object)) {
+                                    for (let param in requestParams) {
+                                        let paramValue = requestParams[param];
+                                        // if (isReflectedXssVector(paramValue, response)) {
+                                        if (response.indexOf(paramValue) !== -1) {
+                                            //Matched YAY
+                                            let Judge = Client._jury.use('view');
+                                            if (Judge.execute(paramValue)) {
+                                                Judge.sendToJail();
+                                            }
                                         }
                                     }
                                 }
@@ -98,21 +102,23 @@ viewMonitor.prototype.handleExpress = function(Client, exports, name, version) {
                     }
 
                     var _send = res.send;
-                    res.send = function(){
-                        if(Client._currentRequest.isDanger()) return _send.apply(this,arguments);
+                    res.send = function() {
                         // arguments
                         var response= arguments[0];
-                        if (Client._currentRequest) {
-                            let requestParams = Client._currentRequest.getParam();
-                            if (!(Object.keys(requestParams).length === 0 && requestParams.constructor === Object)) {
-                                for (let param in requestParams) {
-                                    let paramValue = requestParams[param];
-                                    // if (isReflectedXssVector(paramValue, response)) {
-                                    if (response.indexOf(paramValue) !== -1) {
-                                        //Matched YAY
-                                        let Judge = Client._jury.use('view');
-                                        if(Judge.execute(paramValue)){
-                                            Judge.sendToJail();
+                        if (response) {
+                            if (Client._currentRequest) {
+                                if (Client._currentRequest.isDanger()) return _send.apply(this,arguments);
+                                let requestParams = Client._currentRequest.getParam();
+                                if (!(Object.keys(requestParams).length === 0 && requestParams.constructor === Object)) {
+                                    for (let param in requestParams) {
+                                        let paramValue = requestParams[param];
+                                        // if (isReflectedXssVector(paramValue, response)) {
+                                        if (response.indexOf(paramValue) !== -1) {
+                                            //Matched YAY
+                                            let Judge = Client._jury.use('view');
+                                            if (Judge.execute(paramValue)) {
+                                                Judge.sendToJail();
+                                            }
                                         }
                                     }
                                 }
