@@ -177,6 +177,10 @@ function isParamInPath(param, path){
 
 function wrapRead(path, Client)
 {
+    if (path.indexOf('shieldfy-nodejs-client') !== -1) {
+        return
+    }
+    
     if (Client._currentRequest) {
         let requestPath = Client._currentRequest._url.uri;
         let requestParams = Client._currentRequest.getParam();
