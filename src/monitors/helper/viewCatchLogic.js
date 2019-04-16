@@ -416,7 +416,7 @@ var keywordsRegexes = makeKeywordsRegexes(keywords);
 
 function keywordsReplacerFunction(match, _, offset, string){
     if(string[offset+match.length].match(/[a-zA-Z]/i)
-    || string[offset-1].match(/[a-zA-Z]/i)    
+    || ( offset!= 0 && string[offset-1].match(/[a-zA-Z]/i))   
     ){
         return match;
     }
