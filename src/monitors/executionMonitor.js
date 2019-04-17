@@ -1,5 +1,7 @@
 const Hook = require('require-in-the-middle');
 const Shimmer = require('shimmer');
+const util = require('util');
+const EventEmitter = require('events');
 
 const executionMonitor = function()
 {
@@ -25,7 +27,18 @@ executionMonitor.prototype.childProcess = function(Client,exports, name, version
     Shimmer.wrap( exports , 'exec', function (original) {
         return function (command, options, callback) { 
             if (wrapExecution(Client, command)) {
-                return exports;
+                class Emitter extends EventEmitter {}
+                var emitter = new Emitter();
+                var returned = function() {
+                    EventEmitter.call(this);
+                    this.stdout = emitter;
+                    this.stderr = emitter;
+                    this.stdin = emitter;
+                    this.stdio = emitter;
+                }
+                util.inherits(returned, EventEmitter);
+
+                return new returned();
             }
             
             var returned = original.apply(this, arguments);
@@ -48,7 +61,18 @@ executionMonitor.prototype.childProcess = function(Client,exports, name, version
         return function (command, args, options) { 
             // use args in applying rules
             if (wrapExecution(Client, command)) {
-                return exports;
+                class Emitter extends EventEmitter {}
+                var emitter = new Emitter();
+                var returned = function() {
+                    EventEmitter.call(this);
+                    this.stdout = emitter;
+                    this.stderr = emitter;
+                    this.stdin = emitter;
+                    this.stdio = emitter;
+                }
+                util.inherits(returned, EventEmitter);
+
+                return new returned();
             }
             
             var returned = original.apply(this, arguments);
@@ -81,6 +105,7 @@ executionMonitor.prototype.childProcess = function(Client,exports, name, version
 
 function wrapExecution(Client, command)
 {
+    if (!command) return;
     if (Client._currentRequest) {
         let requestParams = Client._currentRequest.getParam();
 
