@@ -1,6 +1,8 @@
 const Hook = require('require-in-the-middle');
 const Shimmer = require('shimmer');
 const Normalizer = require('../normalizer');
+const util = require('util');
+const EventEmitter = require('events');
 
 const DBMonitor = function()
 {
@@ -73,7 +75,7 @@ DBMonitor.prototype.mongoDB = function(Client, exports,name) {
         return function (query ,document, callback) {
             
             if(Client._currentRequest){
-
+                
                 let value = JSON.stringify(document.query)
                 let requestParams = Client._currentRequest.getParam();
 
@@ -114,7 +116,7 @@ function wrapQuery(Client, connection)
                 if(!(Object.keys(requestParams).length === 0 && requestParams.constructor === Object)){
                     if (typeof query === 'object') {
 
-                        wrapQueryObject(query, requestParams, Client);
+                        if (wrapQueryObject(query, requestParams, Client)) return mockReturned();
 
                     }else{
 
@@ -128,6 +130,7 @@ function wrapQuery(Client, connection)
                                 let Judge = Client._jury.use('db','sqli');
                                 if(Judge.execute(paramValue)){
                                     Judge.sendToJail();
+                                    return mockReturned();
                                 }
                             }
                         }
@@ -154,10 +157,12 @@ function wrapQueryObject(query, requestParams, Client)
                 let Judge = Client._jury.use('db','sqli');
                 if(Judge.execute(paramValue)){
                     Judge.sendToJail();
+                    return true;
                 }
             }
         }
     }
+    return false;
 }
 
 function wrapExecute(Client, connection)
@@ -190,6 +195,21 @@ function wrapExecute(Client, connection)
             return original.apply(this, arguments);
         }
     });
+}
+
+function mockReturned () {
+
+    class Emitter extends EventEmitter {}
+    // var emitter = new Emitter();
+    var returned = function() {
+        EventEmitter.call(this);
+        // this._connection = emitter;
+        // this._socket = emitter;
+        // this._protocol = emitter;
+    }
+    util.inherits(returned, EventEmitter);
+    
+    return new returned();
 }
 
 
