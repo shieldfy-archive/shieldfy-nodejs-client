@@ -1,6 +1,8 @@
 const Hook = require('require-in-the-middle');
 const Shimmer = require('shimmer');
 const Normalizer = require('../normalizer');
+const util = require('util');
+const EventEmitter = require('events');
 
 const fileMonitor = function()
 {
@@ -24,9 +26,7 @@ fileMonitor.prototype.handleFile = function(Client,exports, name, version)
 {
     Shimmer.wrap( exports , 'readFile', function (original) {
         return function (path, callback) {
-            original(path,'utf8',function(err,data) {
-                wrapRead(path, Client);
-            })
+            if (wrapRead(path, Client)) return;
             var returned = original.apply(this, arguments);
             return returned;
         };
@@ -34,7 +34,7 @@ fileMonitor.prototype.handleFile = function(Client,exports, name, version)
 
     Shimmer.wrap( exports , 'readFileSync', function (original) {
         return function (path, encoding) {
-            wrapRead(path, Client);
+            if (wrapRead(path, Client)) return '';
             var returned = original.apply(this, arguments);
             return returned;
         };
@@ -42,7 +42,7 @@ fileMonitor.prototype.handleFile = function(Client,exports, name, version)
 
     Shimmer.wrap( exports , 'createReadStream', function (original) {
         return function (path) {
-            wrapRead(path, Client);
+            if (wrapRead(path, Client)) return mockReturnedReadFile();
             var returned = original.apply(this, arguments);
             return returned;
         }
@@ -177,8 +177,9 @@ function isParamInPath(param, path){
 
 function wrapRead(path, Client)
 {
+    if (!path) return false;
     if (path.indexOf('shieldfy-nodejs-client') !== -1) {
-        return
+        return false;
     }
     
     if (Client._currentRequest) {
@@ -194,6 +195,7 @@ function wrapRead(path, Client)
                     let Judge = Client._jury.use('files','PARAMETERS');
                     if (Judge.execute(paramValue)) {
                         Judge.sendToJail();
+                        return true;
                     }
                 }
             }
@@ -205,10 +207,24 @@ function wrapRead(path, Client)
                 let Judge = Client._jury.use('files', 'URL');
                 if (Judge.execute(paramValue)) {
                     Judge.sendToJail();
+                    return true;
                 }
             }
         }
     }
+    return false;
+}
+
+function mockReturnedReadFile () {
+
+    class Emitter extends EventEmitter {}
+    // var emitter = new Emitter();
+    var returned = function() {
+        EventEmitter.call(this);
+    }
+    util.inherits(returned, EventEmitter);
+    
+    return new returned();
 }
 
 // function wrapWrite(path, data, Client){
