@@ -26,6 +26,7 @@ memoryMonitor.prototype.run = function(Client)
                                 let Judge = Client._jury.use('memory');
                                 if(Judge.execute(paramValue)){
                                     Judge.sendToJail();
+                                    return value;
                                 }
                             }
                         }
