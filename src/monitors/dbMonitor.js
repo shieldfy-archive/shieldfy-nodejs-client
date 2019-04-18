@@ -118,9 +118,9 @@ function wrapQuery(Client, connection)
 
                         if (wrapQueryObject(query, requestParams, Client)) return mockReturned();
 
-                    }else{
+                    }else if (typeof query === 'string') {
 
-                        for(let param in requestParams){
+                        for (let param in requestParams) {
                             
                             let paramValue = requestParams[param];
                             if (query.indexOf(paramValue) !== -1) {
@@ -128,7 +128,7 @@ function wrapQuery(Client, connection)
                                 paramValue = new Normalizer(paramValue).run();
 
                                 let Judge = Client._jury.use('db','sqli');
-                                if(Judge.execute(paramValue)){
+                                if (Judge.execute(paramValue)) {
                                     Judge.sendToJail();
                                     return mockReturned();
                                 }
@@ -175,18 +175,24 @@ function wrapExecute(Client, connection)
                 let requestParams = Client._currentRequest.getParam();
 
                 if (!(Object.keys(requestParams).length === 0 && requestParams.constructor === Object)) {
-                    
-                    for (let param in requestParams) {
-                        
-                        let paramValue = requestParams[param];
-                        
-                        if (query.indexOf(paramValue) !== -1) {
-                            //Matched YAY
-                            paramValue = new Normalizer(paramValue).run();
+                    if (typeof query === 'object') {
 
-                            let Judge = Client._jury.use('db','sqli');
-                            if(Judge.execute(paramValue)){
-                                Judge.sendToJail();
+                        if (wrapQueryObject(query, requestParams, Client)) return mockReturned();
+
+                    }else if (typeof query === 'string') {
+
+                        for (let param in requestParams) {
+                            
+                            let paramValue = requestParams[param];
+                            if (query.indexOf(paramValue) !== -1) {
+                                //Matched YAY
+                                paramValue = new Normalizer(paramValue).run();
+
+                                let Judge = Client._jury.use('db','sqli');
+                                if(Judge.execute(paramValue)){
+                                    Judge.sendToJail();
+                                    return mockReturned();
+                                }
                             }
                         }
                     }
