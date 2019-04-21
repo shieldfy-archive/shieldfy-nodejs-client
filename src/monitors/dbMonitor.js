@@ -120,7 +120,7 @@ function wrapQuery(Client, connection)
 
                     }else if (typeof sql === 'string') {
 
-                        if (typeof values === 'string') {
+                        if (typeof values !== 'function') {
                             if (wrapQueryString(values, requestParams, Client)) return mockReturned();
                         }
 
