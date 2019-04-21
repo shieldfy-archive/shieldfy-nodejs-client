@@ -107,39 +107,49 @@ DBMonitor.prototype.mongoDB = function(Client, exports,name) {
 function wrapQuery(Client, connection)
 {
     Shimmer.wrap(connection, 'query',function(original) {
-        return function (query , callback) { 
+        return function (sql, values, callback) { 
 
             if (Client._currentRequest) {
                 
                 let requestParams = Client._currentRequest.getParam();
                 
                 if(!(Object.keys(requestParams).length === 0 && requestParams.constructor === Object)){
-                    if (typeof query === 'object') {
+                    if (typeof sql === 'object') {
+                        // TODO: pass value to wrapQueryObject and check it's type
+                        if (wrapQueryObject(sql, requestParams, Client)) return mockReturned();
 
-                        if (wrapQueryObject(query, requestParams, Client)) return mockReturned();
+                    }else if (typeof sql === 'string') {
 
-                    }else if (typeof query === 'string') {
-
-                        for (let param in requestParams) {
-                            
-                            let paramValue = requestParams[param];
-                            if (query.indexOf(paramValue) !== -1) {
-                                //Matched YAY
-                                paramValue = new Normalizer(paramValue).run();
-
-                                let Judge = Client._jury.use('db','sqli');
-                                if (Judge.execute(paramValue)) {
-                                    Judge.sendToJail();
-                                    return mockReturned();
-                                }
-                            }
+                        if (typeof values === 'string') {
+                            if (wrapQueryString(values, requestParams, Client)) return mockReturned();
                         }
+
+                        if (wrapQueryString(sql, requestParams, Client)) return mockReturned();
                     }
                 }
             }
             return original.apply(this, arguments);
         }
     });
+}
+
+function wrapQueryString(query, requestParams, Client)
+{
+    for (let param in requestParams) {
+                            
+        let paramValue = requestParams[param];
+        if (query.indexOf(paramValue) !== -1) {
+            //Matched YAY
+            paramValue = new Normalizer(paramValue).run();
+
+            let Judge = Client._jury.use('db','sqli');
+            if (Judge.execute(paramValue)) {
+                Judge.sendToJail();
+                return true;
+            }
+        }
+    }
+    return false;
 }
 
 function wrapQueryObject(query, requestParams, Client)
