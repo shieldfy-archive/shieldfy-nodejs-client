@@ -6,12 +6,16 @@ function StackCollector()
     
 }
 
-StackCollector.prototype.parse = function(callback)
+StackCollector.prototype.parse = function(err, callback)
 {
-    getParsedStack((parsedStack) => {
-        var vulnerableLine =getVulnerableLine(parsedStack);
-        var lineNumber= vulnerableLine[0];
-        var path= vulnerableLine[1];
+    getParsedStack(err, (parsedStack) => {
+        var vulnerableLine = getVulnerableLine(parsedStack);
+        if (!vulnerableLine) {
+            callback({});
+            return;
+        }
+        var lineNumber = vulnerableLine[0];
+        var path = vulnerableLine[1];
         lineCollector(path, lineNumber, function(codeContent) {
             callback({
                 code: codeContent,
@@ -26,8 +30,8 @@ StackCollector.prototype.parse = function(callback)
 /**
  * @param {Function} cb
  */
-function getParsedStack(cb) {
-    stackman.callsites(new Error(), function (err, callsites) {
+function getParsedStack(e ,cb) {
+    stackman.callsites(e , function (err, callsites) {
         // if (err) throw err
         var stack = [];
         for (let index = 0; index < callsites.length; index++) {
