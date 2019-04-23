@@ -44,6 +44,7 @@ ssrfMonitor.prototype.http = function(Client,exports, name, version)
                                 let Judge = Client._jury.use('ssrf');
                                 if (Judge.execute(host)) {
                                     Judge.sendToJail();
+                                    // TODO: mock the return value
                                 }
                             }
                         }
@@ -91,6 +92,7 @@ ssrfMonitor.prototype.http = function(Client,exports, name, version)
                                 let Judge = Client._jury.use('ssrf');
                                 if (Judge.execute(host)) {
                                     Judge.sendToJail();
+                                    // TODO: mock the return value
                                 }
                             }
                         }
@@ -118,6 +120,7 @@ ssrfMonitor.prototype.http = function(Client,exports, name, version)
                                 let Judge = Client._jury.use('ssrf');
                                 if (Judge.execute(host)) {
                                     Judge.sendToJail();
+                                    // TODO: mock the return value
                                 }
                             }
                         }
@@ -150,6 +153,7 @@ ssrfMonitor.prototype.http = function(Client,exports, name, version)
                                 let Judge = Client._jury.use('ssrf');
                                 if (Judge.execute(host)) {
                                     Judge.sendToJail();
+                                    // TODO: mock the return value
                                 }
                             }
                         }
@@ -177,6 +181,7 @@ ssrfMonitor.prototype.http = function(Client,exports, name, version)
                                 let Judge = Client._jury.use('ssrf');
                                 if (Judge.execute(host)) {
                                     Judge.sendToJail();
+                                    // TODO: mock the return value
                                 }
                             }
                         }
@@ -213,6 +218,7 @@ ssrfMonitor.prototype.http2 = function(Client,exports, name, version)
                                 let Judge = Client._jury.use('ssrf');
                                 if (Judge.execute(host)) {
                                     Judge.sendToJail();
+                                    // TODO: mock the return value
                                 }
                             }
                         }
