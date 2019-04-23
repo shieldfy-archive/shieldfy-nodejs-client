@@ -15,7 +15,6 @@ function Jury(Client, Rules)
             this._rules[type][RuleId] = new Rule(RuleId,RulesContent[RuleId]);
         }
     }
-    
 }
 
 Jury.prototype.use = function(monitor, target ='')
@@ -26,13 +25,13 @@ Jury.prototype.use = function(monitor, target ='')
         var targetedRules = {};
         for (const id in this._rules[monitor]) {
             if (this._rules[monitor][id]['_target'] === target) {
-                targetedRules[id]=this._rules[monitor][id];
+                targetedRules[id] = this._rules[monitor][id];
             }
         }
-        return new Judge(monitor,targetedRules,this._client._currentRequest,this._client._http);
+        return new Judge(monitor, targetedRules, this._client._currentRequest, this._client._http, this._client._config.action);
     }
 
-    return new Judge(monitor,this._rules[monitor],this._client._currentRequest,this._client._http);
+    return new Judge(monitor, this._rules[monitor], this._client._currentRequest, this._client._http, this._client._config.action);
 }
 
 module.exports = Jury;
