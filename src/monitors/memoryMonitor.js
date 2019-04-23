@@ -26,6 +26,8 @@ memoryMonitor.prototype.run = function(Client)
                                 let Judge = Client._jury.use('memory');
                                 if(Judge.execute(paramValue)){
                                     Judge.sendToJail();
+                                    // return false to can continue execute the main function without return mocking value
+                                    if (Client._config.action == 'listen') return original.apply(this, arguments);
                                     return value;
                                 }
                             }
@@ -33,7 +35,7 @@ memoryMonitor.prototype.run = function(Client)
                     }
                 }catch(e){}
             }
-            var returned = original.apply(this, arguments)
+            var returned = original.apply(this, arguments);
             return returned;
         };
     });
