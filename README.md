@@ -42,6 +42,28 @@ shieldfyAppSecret = "YourAppSecret"
 ### NOTE: You should require Shieldfy in the main file at first before any other package or module in order to SDK work correctly.
 
 
+## Detection-Mode
+
+### BLOCK
+
+This is default mode in which if there exist attack on your application SDK will stop the attack and block it then report     to the shieldfy dashboard.
+
+
+### LISTEN
+
+In this mode the SDK will not bloack any attack but it will still report this attacks to shieldfy dashboard. 
+to activate this mode pass action property equal "listen" in the object to the `shieldfy.start()` function as following
+    
+```js
+const shieldfy= require('shieldfy-nodejs-client');
+shieldfy.start({
+    appKey:'yourAppKey',
+    appSecret:'YourAppSecret',
+    action: 'listen'
+});
+```
+
+
 ## Configuration
 
 For more information about configurations and usage, refer to the official documentation at [docs.shieldfy.io](#).
