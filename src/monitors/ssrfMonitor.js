@@ -109,8 +109,7 @@ ssrfMonitor.prototype.http = function(Client,exports, name, version)
                         
                     } else if (typeof(arguments[0]) == 'object') {
                     
-                        let protocol= arguments[0].protocol == 'https:' || arguments[0].agent.protocol == 'https:' || arguments[0].uri.protocol == 'https:'
-                        ? 'https:' : 'http:';
+                        let protocol= arguments[0].protocol == 'https:' ? 'https:' : 'http:';
                         
                         let urlOb = protocol + '//' + arguments[0].host + ':' + arguments[0].port + arguments[0].path;
                         for (let param in requestParams) {
@@ -170,8 +169,7 @@ ssrfMonitor.prototype.http = function(Client,exports, name, version)
                         
                     } else if (typeof(arguments[0]) == 'object') {
                         
-                        let protocol= arguments[0].protocol == 'https:' || arguments[0].agent.protocol == 'https:' || arguments[0].uri.protocol == 'https:'
-                        ? 'https:' : 'http:';
+                        let protocol= arguments[0].protocol == 'https:' ? 'https:' : 'http:';
                         
                         let urlOb = protocol + '//' + arguments[0].host + ':' + arguments[0].port + arguments[0].path;
                         for (let param in requestParams) {
