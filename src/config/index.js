@@ -1,6 +1,6 @@
 function Config() {
     this._defaults = {
-      "sdkVersion": "0.1.0",
+      "sdkVersion": "0.1.1",
       "endPoint": 'https://api.shieldfy.com/v2/',
       "appKey": null,
       "appSecret": null,
@@ -13,11 +13,11 @@ function Config() {
 
 Config.prototype.setConfig = function (opts)
 {
-    if ( process.env.appKey !== undefined && process.env.appSecret !== undefined ) {
+    if ( process.env.shieldfyAppKey !== undefined && process.env.shieldfyAppSecret !== undefined ) {
         var EnvOpts = {
-            'appKey':process.env.appKey,
-            'appSecret':process.env.appSecret,
-            'debug':process.env.debug
+            'appKey':process.env.shieldfyAppKey,
+            'appSecret':process.env.shieldfyAppSecret,
+            'debug':process.env.shieldfyDebug
         };
         Object.assign(this._defaults,EnvOpts);
     }

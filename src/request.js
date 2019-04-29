@@ -3,10 +3,11 @@ const cookie = require('cookie');
 const uuid = require('uuid');
 const Busboy = require('busboy');
 const { parse } = require('querystring');
-function Request()
+
+function Request(sessionId)
 {
     this._id = uuid.v4();
-
+    this._sessionId = sessionId;
     this._statusCode = null; //the status code extracted from the response;
     // score of the request
     this._score = 0; //current request score
@@ -24,7 +25,6 @@ function Request()
     this._$res = null; //the full response object 
 
     this._isDanger = false; //Is the request dangerous 
-    
 }
 
 Request.prototype.start = function(req, res, cb = false)
@@ -51,32 +51,24 @@ Request.prototype.start = function(req, res, cb = false)
             })
         }
     }
-
 }
+
+/**
+ * Request is infected , Ending the request 
+ */
+Request.prototype.end = function(incidentId)
+{
+    return require('./respond').block(incidentId,this._$res);
+}
+
 
 Request.prototype.getIp = function(req)
 {
-    try {
-        if (req.headers === undefined){
-            throw "request does not has a headers"
-        }else{
-            var xff = req.headers['x-forwarded-for'];
-        }
-    
-        var ip = req.connection.remoteAddress;
-    
-        if (xff) {
-            if (xff != ip) {
-                return ip;
-            }
-        }
-        return ip;
-    } catch(e) {}
+    return (req.headers['x-forwarded-for'] || '').split(',')[0] || req.connection.remoteAddress;
 }
 
 Request.prototype._getPostData = function(req,cb)
 {
-    
     // check if the content type is multipart/form-data
     if(req.headers["content-type"].indexOf("multipart/form-data") !== -1)
     {
@@ -98,6 +90,7 @@ Request.prototype._getPostData = function(req,cb)
         });
     }
 }
+
 
 /**
  * extract the data from the form-data
@@ -150,7 +143,6 @@ Request.prototype._prepareFormData = function(req,cb)
 
         req.pipe(busboy);
     }catch(e){ }
-    
 }
 
 /**
@@ -197,13 +189,11 @@ Request.prototype._extractUrl = function(req)
     };
 }
 
-
 Request.prototype.setRes = function(res)
 {
     this._$res = res;
     this._statusCode = res ? res.statusCode : '';
 }
-
 
 Request.prototype.setDanger = function(status)
 {
@@ -213,12 +203,6 @@ Request.prototype.setDanger = function(status)
 Request.prototype.isDanger = function()
 {
     return this._isDanger;
-}
-
-
-Request.prototype.end = function()
-{
-
 }
 
 Request.prototype.getParam = function()
