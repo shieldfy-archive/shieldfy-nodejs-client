@@ -1,6 +1,6 @@
 {
   "name": "shieldfy-nodejs-client",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "shieldfy nodejs official sdk",
   "main": "index.js",
   "directories": {
