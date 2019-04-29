@@ -118,6 +118,8 @@ function wrapExecution(Client, command)
                     let Judge = Client._jury.use('rce');
                     if (Judge.execute(paramValue)) {
                         Judge.sendToJail();
+                        // return false to can continue execute the main function without return mocking value
+                        if (Client._config.action == 'listen') return false;
                         return true;
                     }
                 }

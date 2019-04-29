@@ -92,6 +92,9 @@ DBMonitor.prototype.mongoDB = function(Client, exports,name) {
                             let Judge = Client._jury.use('db','nosqli');
                             if(Judge.execute(paramValue)){
                                 Judge.sendToJail();
+                                // TODO: mock the return value
+                                // return false to can continue execute the main function without return mocking value
+                                // if (Client._config.action == 'listen') return false;
                             }
                         }
                     }
@@ -145,6 +148,8 @@ function wrapQueryString(query, requestParams, Client)
             let Judge = Client._jury.use('db','sqli');
             if (Judge.execute(paramValue)) {
                 Judge.sendToJail();
+                // return false to can continue execute the main function without return mocking value
+                if (Client._config.action == 'listen') return false;
                 return true;
             }
         }
@@ -167,6 +172,8 @@ function wrapQueryObject(query, requestParams, Client)
                 let Judge = Client._jury.use('db','sqli');
                 if(Judge.execute(paramValue)){
                     Judge.sendToJail();
+                    // return false to can continue execute the main function without return mocking value
+                    if (Client._config.action == 'listen') return false;
                     return true;
                 }
             }
@@ -201,6 +208,8 @@ function wrapExecute(Client, connection)
                                 let Judge = Client._jury.use('db','sqli');
                                 if(Judge.execute(paramValue)){
                                     Judge.sendToJail();
+                                    // return false to can continue execute the main function without return mocking value
+                                    if (Client._config.action == 'listen') return original.apply(this, arguments);
                                     return mockReturned();
                                 }
                             }
