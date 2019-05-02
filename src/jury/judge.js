@@ -9,11 +9,12 @@ const BLOCKTHREHOLD = 70;
  * @param Object request
  * @param Object http
  */
-function Judge(monitor, rules, request, http) {
+function Judge(monitor, rules, request, http, action) {
     this._monitorName = monitor;
     this._rules = rules;
     this._currentRequest = request;
     this._http = http;
+    this._action = action;
 
     this._incidentId = '';
     this._result = {
@@ -57,8 +58,10 @@ Judge.prototype.execute = function(value)
 
 Judge.prototype.sendToJail = function()
 {
-    this._currentRequest.setDanger(true);
-    this._currentRequest.end(this._incidentId);
+    if (this._action == 'block') {
+        this._currentRequest.setDanger(true);
+        this._currentRequest.end(this._incidentId);
+    }
     StackCollector.parse(new Error(), (codeInfo) => {  
         this.reportThreat(codeInfo);
     });

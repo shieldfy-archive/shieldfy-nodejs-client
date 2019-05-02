@@ -22,8 +22,14 @@ Normalizer.prototype._normalizeType = function()
 
         // remove quotes
         var quotes = new RegExp(/(?:\'+|\"+|\`+|\´+|\’+|\‘+)/,'gm');
-        return this._value.replace(quotes, "\"");
-    }catch (e){}
+        this._value.replace(quotes, "\"");
+
+        //to lower case
+        this._value = this._value.toLowerCase();
+        return this._value;
+    }catch (e){
+        return this._value;
+    }
 }
 
 

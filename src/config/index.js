@@ -1,6 +1,6 @@
 function Config() {
     this._defaults = {
-      "sdkVersion": "0.1.1",
+      "sdkVersion": "0.5.2",
       "endPoint": 'https://api.shieldfy.com/v2/',
       "appKey": null,
       "appSecret": null,

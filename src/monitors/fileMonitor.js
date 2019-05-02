@@ -79,6 +79,9 @@ fileMonitor.prototype.handleFile = function(Client,exports, name, version)
     //                         let Judge = Client._jury.use('files','FILENAME');
     //                         if (Judge.execute(paramValue)) {
     //                             Judge.sendToJail();
+    //                             // TODO: mock the return value
+    //                             // return false to can continue execute the main function without return mocking value
+    //                             // if (Client._config.action == 'listen') return false;
     //                         }
     //                     }
     //                 });
@@ -92,6 +95,9 @@ fileMonitor.prototype.handleFile = function(Client,exports, name, version)
     //                         let Judge = Client._jury.use('files','CONTENT');
     //                         if (Judge.execute(fileContent)) {
     //                             Judge.sendToJail();
+    //                             // TODO: mock the return value
+    //                             // return false to can continue execute the main function without return mocking value
+    //                             // if (Client._config.action == 'listen') return false;
     //                         }
     //                     }
     //                     var returned = original.apply(this, arguments);
@@ -195,6 +201,8 @@ function wrapRead(path, Client)
                     let Judge = Client._jury.use('files','PARAMETERS');
                     if (Judge.execute(paramValue)) {
                         Judge.sendToJail();
+                        // return false to can continue execute the main function without return mocking value
+                        if (Client._config.action == 'listen') return false;
                         return true;
                     }
                 }
@@ -207,6 +215,8 @@ function wrapRead(path, Client)
                 let Judge = Client._jury.use('files', 'URL');
                 if (Judge.execute(paramValue)) {
                     Judge.sendToJail();
+                    // return false to can continue execute the main function without return mocking value
+                    if (Client._config.action == 'listen') return false;
                     return true;
                 }
             }
@@ -240,6 +250,8 @@ function mockReturnedReadFile () {
 //                     let Judge = Client._jury.use('files','FILENAME');
 //                     if (Judge.execute(paramValue)) {
 //                         Judge.sendToJail();
+//                         // return false to can continue execute the main function without return mocking value
+//                         // if (Client._config.action == 'listen') return false;
 //                     }
 //                 }
 //             });
@@ -251,6 +263,8 @@ function mockReturnedReadFile () {
 //             let Judge = Client._jury.use('files','CONTENT');
 //             if (Judge.execute(fileContent)) {
 //                 Judge.sendToJail();
+//                 // return false to can continue execute the main function without return mocking value
+//                 if (Client._config.action == 'listen') return false;
 //             }
 //         }
 //     }

@@ -44,6 +44,7 @@ ssrfMonitor.prototype.http = function(Client,exports, name, version)
                                 let Judge = Client._jury.use('ssrf');
                                 if (Judge.execute(host)) {
                                     Judge.sendToJail();
+                                    // TODO: mock the return value
                                 }
                             }
                         }
@@ -91,6 +92,7 @@ ssrfMonitor.prototype.http = function(Client,exports, name, version)
                                 let Judge = Client._jury.use('ssrf');
                                 if (Judge.execute(host)) {
                                     Judge.sendToJail();
+                                    // TODO: mock the return value
                                 }
                             }
                         }
@@ -107,8 +109,7 @@ ssrfMonitor.prototype.http = function(Client,exports, name, version)
                         
                     } else if (typeof(arguments[0]) == 'object') {
                     
-                        let protocol= arguments[0].protocol == 'https:' || arguments[0].agent.protocol == 'https:' || arguments[0].uri.protocol == 'https:'
-                        ? 'https:' : 'http:';
+                        let protocol= arguments[0].protocol == 'https:' ? 'https:' : 'http:';
                         
                         let urlOb = protocol + '//' + arguments[0].host + ':' + arguments[0].port + arguments[0].path;
                         for (let param in requestParams) {
@@ -119,6 +120,7 @@ ssrfMonitor.prototype.http = function(Client,exports, name, version)
                                 let Judge = Client._jury.use('ssrf');
                                 if (Judge.execute(host)) {
                                     Judge.sendToJail();
+                                    // TODO: mock the return value
                                 }
                             }
                         }
@@ -151,6 +153,7 @@ ssrfMonitor.prototype.http = function(Client,exports, name, version)
                                 let Judge = Client._jury.use('ssrf');
                                 if (Judge.execute(host)) {
                                     Judge.sendToJail();
+                                    // TODO: mock the return value
                                 }
                             }
                         }
@@ -167,8 +170,7 @@ ssrfMonitor.prototype.http = function(Client,exports, name, version)
                         
                     } else if (typeof(arguments[0]) == 'object') {
                         
-                        let protocol= arguments[0].protocol == 'https:' || arguments[0].agent.protocol == 'https:' || arguments[0].uri.protocol == 'https:'
-                        ? 'https:' : 'http:';
+                        let protocol= arguments[0].protocol == 'https:' ? 'https:' : 'http:';
                         
                         let urlOb = protocol + '//' + arguments[0].host + ':' + arguments[0].port + arguments[0].path;
                         for (let param in requestParams) {
@@ -179,6 +181,7 @@ ssrfMonitor.prototype.http = function(Client,exports, name, version)
                                 let Judge = Client._jury.use('ssrf');
                                 if (Judge.execute(host)) {
                                     Judge.sendToJail();
+                                    // TODO: mock the return value
                                 }
                             }
                         }
@@ -215,6 +218,7 @@ ssrfMonitor.prototype.http2 = function(Client,exports, name, version)
                                 let Judge = Client._jury.use('ssrf');
                                 if (Judge.execute(host)) {
                                     Judge.sendToJail();
+                                    // TODO: mock the return value
                                 }
                             }
                         }
