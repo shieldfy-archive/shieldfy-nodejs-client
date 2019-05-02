@@ -113,6 +113,7 @@ ssrfMonitor.prototype.http = function(Client,exports, name, version)
                         let urlOb = protocol + '//' + arguments[0].host + ':' + arguments[0].port + arguments[0].path;
                         for (let param in requestParams) {
                             if (isSSRFVector(requestParams[param],urlOb)) {
+                                urlOb= new URL(urlOb)
                                 let host = urlOb.host || urlOb.hostname;
                                 
                                 let Judge = Client._jury.use('ssrf');
@@ -172,6 +173,7 @@ ssrfMonitor.prototype.http = function(Client,exports, name, version)
                         let urlOb = protocol + '//' + arguments[0].host + ':' + arguments[0].port + arguments[0].path;
                         for (let param in requestParams) {
                             if (isSSRFVector(requestParams[param],urlOb)) {
+                                urlOb= new URL(urlOb)
                                 let host = urlOb.host || urlOb.hostname;
                                 
                                 let Judge = Client._jury.use('ssrf');
