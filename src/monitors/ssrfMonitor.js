@@ -3,8 +3,6 @@
 const Hook = require('require-in-the-middle');
 const Shimmer = require('shimmer');
 const util = require('util');
-const isSSRFVector= require('./helper/SSRFMonitorCatchLogic');
-const SSRFJudgeFudge= require('./helper/SSRFJudgeFudge');
 const { URL } = require('url');
 
 const ssrfMonitor = function()
@@ -36,7 +34,7 @@ ssrfMonitor.prototype.http = function(Client,exports, name, version)
                 if (!(Object.keys(requestParams).length === 0 && requestParams.constructor === Object)) {
                     if (typeof(arguments[0]) == 'string') {
                         for (let param in requestParams) {
-                            if (isSSRFVector(requestParams[param],arguments[0])) {
+                                if (arguments[0].indexOf(requestParams[param]) !== -1) {
                                 // add try catch
                                 let urlOb = new URL(arguments[0]);
                                 let host = urlOb.host || urlOb.hostname;
@@ -84,7 +82,7 @@ ssrfMonitor.prototype.http = function(Client,exports, name, version)
                 if (!(Object.keys(requestParams).length === 0 && requestParams.constructor === Object)) {
                     if (typeof(arguments[0]) == 'string') {
                         for (let param in requestParams) {
-                            if (isSSRFVector(requestParams[param],arguments[0])) {
+                            if (arguments[0].indexOf(requestParams[param]) !== -1) {
                                 // add try catch
                                 let urlOb = new URL(arguments[0]);
                                 let host = urlOb.host || urlOb.hostname;
@@ -113,7 +111,7 @@ ssrfMonitor.prototype.http = function(Client,exports, name, version)
                         
                         let urlOb = protocol + '//' + arguments[0].host + ':' + arguments[0].port + arguments[0].path;
                         for (let param in requestParams) {
-                            if (isSSRFVector(requestParams[param],urlOb)) {
+                            if (urlOb.indexOf(requestParams[param]) !== -1) {
                                 urlOb= new URL(urlOb)
                                 let host = urlOb.host || urlOb.hostname;
                                 
@@ -145,7 +143,7 @@ ssrfMonitor.prototype.http = function(Client,exports, name, version)
                 if (!(Object.keys(requestParams).length === 0 && requestParams.constructor === Object)) {
                     if (typeof(arguments[0]) == 'string') {
                         for (let param in requestParams) {
-                            if (isSSRFVector(requestParams[param],arguments[0])) {
+                            if (arguments[0].indexOf(requestParams[param]) !== -1) {
                                 // add try catch
                                 let urlOb = new URL(arguments[0]);
                                 let host = urlOb.host || urlOb.hostname;
@@ -174,7 +172,7 @@ ssrfMonitor.prototype.http = function(Client,exports, name, version)
                         
                         let urlOb = protocol + '//' + arguments[0].host + ':' + arguments[0].port + arguments[0].path;
                         for (let param in requestParams) {
-                            if (isSSRFVector(requestParams[param],urlOb)) {
+                            if (urlOb.indexOf(requestParams[param]) !== -1) {
                                 urlOb= new URL(urlOb)
                                 let host = urlOb.host || urlOb.hostname;
                                 
@@ -210,7 +208,7 @@ ssrfMonitor.prototype.http2 = function(Client,exports, name, version)
                 if (!(Object.keys(requestParams).length === 0 && requestParams.constructor === Object)) {
                     if (typeof(arguments[0]) == 'string') {
                         for (let param in requestParams) {
-                            if (isSSRFVector(requestParams[param],arguments[0])) {
+                            if (arguments[0].indexOf(requestParams[param]) !== -1) {
                                 // add try catch
                                 let urlOb = new URL(arguments[0]);
                                 let host = urlOb.host || urlOb.hostname;
