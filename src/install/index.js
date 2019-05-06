@@ -10,7 +10,7 @@ function Install(client, callback)
 Install.prototype.run = function(client, callback = false)
 {
     this.http.trigger('install', {
-            // host: this.client._config.endPoint,
+            host: '',
             https: '1',
             lang: 'nodeJs',
             sdk_version: this.client._config.sdkVersion,
