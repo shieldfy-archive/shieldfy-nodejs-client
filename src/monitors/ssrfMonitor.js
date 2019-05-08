@@ -37,7 +37,7 @@ ssrfMonitor.prototype.http = function(Client,exports, name, version)
                                 if (arguments[0].indexOf(requestParams[param]) !== -1) {
                                 // add try catch
                                 let urlOb = new URL(arguments[0]);
-                                let host = urlOb.host || urlOb.hostname;
+                                let host = urlOb.hostname || urlOb.host;
                                 
                                 let Judge = Client._jury.use('ssrf');
                                 if (Judge.execute(host)) {
@@ -50,7 +50,7 @@ ssrfMonitor.prototype.http = function(Client,exports, name, version)
                         // TODO: refactor this
                         // try{
                         //     let urlOb = new URL(arguments[0]);
-                        //     let host = urlOb.host || urlOb.hostname;
+                        //     let host = urlOb.hostname || urlOb.host;
                         //     let result = SSRFJudgeFudge(host)
                         //     Client.sendToJail('ssrf', result, );
                             
@@ -85,7 +85,7 @@ ssrfMonitor.prototype.http = function(Client,exports, name, version)
                             if (arguments[0].indexOf(requestParams[param]) !== -1) {
                                 // add try catch
                                 let urlOb = new URL(arguments[0]);
-                                let host = urlOb.host || urlOb.hostname;
+                                let host = urlOb.hostname || urlOb.host;
                                 
                                 let Judge = Client._jury.use('ssrf');
                                 if (Judge.execute(host)) {
@@ -98,7 +98,7 @@ ssrfMonitor.prototype.http = function(Client,exports, name, version)
                         // TODO: refactor this
                         // try{
                         //     let urlOb = new URL(arguments[0]);
-                        //     let host = urlOb.host || urlOb.hostname;
+                        //     let host = urlOb.hostname || urlOb.host;
                         //     let result = SSRFJudgeFudge(host)
                         //     Client.sendToJail('ssrf', result, );
                         // }catch (e) {
@@ -113,7 +113,7 @@ ssrfMonitor.prototype.http = function(Client,exports, name, version)
                         for (let param in requestParams) {
                             if (urlOb.indexOf(requestParams[param]) !== -1) {
                                 urlOb= new URL(urlOb)
-                                let host = urlOb.host || urlOb.hostname;
+                                let host = urlOb.hostname || urlOb.host;
                                 
                                 let Judge = Client._jury.use('ssrf');
                                 if (Judge.execute(host)) {
@@ -124,7 +124,7 @@ ssrfMonitor.prototype.http = function(Client,exports, name, version)
                         }
                         
                         // TODO: refactor this
-                        // let host = urlOb.host || urlOb.hostname;
+                        // let host = urlOb.hostname || urlOb.host;
                         // let result = SSRFJudgeFudge(host)
                         // Client.sendToJail('ssrf', result, );
                     }
@@ -146,7 +146,7 @@ ssrfMonitor.prototype.http = function(Client,exports, name, version)
                             if (arguments[0].indexOf(requestParams[param]) !== -1) {
                                 // add try catch
                                 let urlOb = new URL(arguments[0]);
-                                let host = urlOb.host || urlOb.hostname;
+                                let host = urlOb.hostname || urlOb.host;
                                 
                                 let Judge = Client._jury.use('ssrf');
                                 if (Judge.execute(host)) {
@@ -159,7 +159,7 @@ ssrfMonitor.prototype.http = function(Client,exports, name, version)
                         // TODO: refactor this
                         // try{
                         //     let urlOb = new URL(arguments[0]);
-                        //     let host = urlOb.host || urlOb.hostname;
+                        //     let host = urlOb.hostname || urlOb.host;
                         //     let result = SSRFJudgeFudge(host)
                         //     Client.sendToJail('ssrf', result, );
                         // }catch (e) {
@@ -174,7 +174,7 @@ ssrfMonitor.prototype.http = function(Client,exports, name, version)
                         for (let param in requestParams) {
                             if (urlOb.indexOf(requestParams[param]) !== -1) {
                                 urlOb= new URL(urlOb)
-                                let host = urlOb.host || urlOb.hostname;
+                                let host = urlOb.hostname || urlOb.host;
                                 
                                 let Judge = Client._jury.use('ssrf');
                                 if (Judge.execute(host)) {
@@ -185,7 +185,7 @@ ssrfMonitor.prototype.http = function(Client,exports, name, version)
                         }
 
                         // TODO: refactor this
-                        // let host = urlOb.host || urlOb.hostname;
+                        // let host = urlOb.hostname || urlOb.host;
                         // let result = SSRFJudgeFudge(host)
                         // Client.sendToJail('ssrf', result, );
                     }
@@ -211,7 +211,7 @@ ssrfMonitor.prototype.http2 = function(Client,exports, name, version)
                             if (arguments[0].indexOf(requestParams[param]) !== -1) {
                                 // add try catch
                                 let urlOb = new URL(arguments[0]);
-                                let host = urlOb.host || urlOb.hostname;
+                                let host = urlOb.hostname || urlOb.host;
                                 
                                 let Judge = Client._jury.use('ssrf');
                                 if (Judge.execute(host)) {
@@ -224,7 +224,7 @@ ssrfMonitor.prototype.http2 = function(Client,exports, name, version)
                         // TODO: refactor this
                         // try{
                         //     let urlOb = new URL(arguments[0]);
-                        //     let host = urlOb.host || urlOb.hostname;
+                        //     let host = urlOb.hostname || urlOb.host;
                         //     let result = SSRFJudgeFudge(host)
                         //     Client.sendToJail('ssrf', result, );
                         // }catch (e) {
