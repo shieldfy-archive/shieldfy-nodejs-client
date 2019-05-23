@@ -12,7 +12,7 @@ const ssrfMonitor = function()
 {
     this._callbacks = {
         'http': this.http,
-        'http2': this.http2
+        // 'http2': this.http2
     }
 }
 
@@ -203,46 +203,47 @@ ssrfMonitor.prototype.http = function(Client,exports, name, version)
     return exports;
 }
 
-ssrfMonitor.prototype.http2 = function(Client,exports, name, version)
-{
-    Shimmer.wrap(exports, 'connect', function(original) {
+// disable this module because it is an experimental
+// ssrfMonitor.prototype.http2 = function(Client,exports, name, version)
+// {
+//     Shimmer.wrap(exports, 'connect', function(original) {
 
-        return function () { 
-            if (Client._currentRequest) {
-                let requestParams = Client._currentRequest.getParam();
-                if (!(Object.keys(requestParams).length === 0 && requestParams.constructor === Object)) {
-                    if (typeof(arguments[0]) == 'string') {
-                        for (let param in requestParams) {
-                            if (arguments[0].indexOf(requestParams[param]) !== -1) {
-                                let urlOb = new URL(arguments[0]);
-                                let host = urlOb.hostname || urlOb.host;
+//         return function () { 
+//             if (Client._currentRequest) {
+//                 let requestParams = Client._currentRequest.getParam();
+//                 if (!(Object.keys(requestParams).length === 0 && requestParams.constructor === Object)) {
+//                     if (typeof(arguments[0]) == 'string') {
+//                         for (let param in requestParams) {
+//                             if (arguments[0].indexOf(requestParams[param]) !== -1) {
+//                                 let urlOb = new URL(arguments[0]);
+//                                 let host = urlOb.hostname || urlOb.host;
                                 
-                                let Judge = Client._jury.use('ssrf');
-                                if (Judge.execute(host)) {
-                                    Judge.sendToJail();
-                                    // TODO: mock the return value
-                                }
-                            }
-                        }
+//                                 let Judge = Client._jury.use('ssrf');
+//                                 if (Judge.execute(host)) {
+//                                     Judge.sendToJail();
+//                                     // TODO: mock the return value
+//                                 }
+//                             }
+//                         }
 
-                        // TODO: refactor this
-                        // try{
-                        //     let urlOb = new URL(arguments[0]);
-                        //     let host = urlOb.hostname || urlOb.host;
-                        //     let result = SSRFJudgeFudge(host)
-                        //     Client.sendToJail('ssrf', result, );
-                        // }catch (e) {
+//                         // TODO: refactor this
+//                         // try{
+//                         //     let urlOb = new URL(arguments[0]);
+//                         //     let host = urlOb.hostname || urlOb.host;
+//                         //     let result = SSRFJudgeFudge(host)
+//                         //     Client.sendToJail('ssrf', result, );
+//                         // }catch (e) {
                             
-                        // }
-                    }
-                }
-            }
-            return original.apply(this, arguments);
-        }
-    })
+//                         // }
+//                     }
+//                 }
+//             }
+//             return original.apply(this, arguments);
+//         }
+//     })
 
-    return exports;
-}
+//     return exports;
+// }
 
 function mockReturnedHttpRequest () {
     var returned = function() {
