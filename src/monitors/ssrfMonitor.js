@@ -3,6 +3,9 @@
 const Hook = require('require-in-the-middle');
 const Shimmer = require('shimmer');
 const util = require('util');
+const EventEmitter = require('events');
+const { ClientRequest } = require('_http_client');
+const { OutgoingMessage } = require('_http_outgoing');
 const { URL } = require('url');
 
 const ssrfMonitor = function()
@@ -35,14 +38,14 @@ ssrfMonitor.prototype.http = function(Client,exports, name, version)
                     if (typeof(arguments[0]) == 'string') {
                         for (let param in requestParams) {
                                 if (arguments[0].indexOf(requestParams[param]) !== -1) {
-                                // add try catch
                                 let urlOb = new URL(arguments[0]);
                                 let host = urlOb.hostname || urlOb.host;
                                 
                                 let Judge = Client._jury.use('ssrf');
                                 if (Judge.execute(host)) {
                                     Judge.sendToJail();
-                                    // TODO: mock the return value
+                                    if (Client._config.action == 'listen') return original.apply(this, arguments);
+                                    return mockReturnedHttpRequest();
                                 }
                             }
                         }
@@ -83,14 +86,14 @@ ssrfMonitor.prototype.http = function(Client,exports, name, version)
                     if (typeof(arguments[0]) == 'string') {
                         for (let param in requestParams) {
                             if (arguments[0].indexOf(requestParams[param]) !== -1) {
-                                // add try catch
                                 let urlOb = new URL(arguments[0]);
                                 let host = urlOb.hostname || urlOb.host;
                                 
                                 let Judge = Client._jury.use('ssrf');
                                 if (Judge.execute(host)) {
                                     Judge.sendToJail();
-                                    // TODO: mock the return value
+                                    if (Client._config.action == 'listen') return original.apply(this, arguments);
+                                    return mockReturnedHttpRequest();
                                 }
                             }
                         }
@@ -106,10 +109,10 @@ ssrfMonitor.prototype.http = function(Client,exports, name, version)
                         // }
                         
                     } else if (typeof(arguments[0]) == 'object') {
-                    
-                        let protocol= arguments[0].protocol == 'https:' ? 'https:' : 'http:';
                         
-                        let urlOb = protocol + '//' + arguments[0].host + ':' + arguments[0].port + arguments[0].path;
+                        let protocol= arguments[0].protocol == 'https:' ? 'https:' : 'http:';
+                        let hostValue = arguments[0].hostname || arguments[0].host
+                        let urlOb = protocol + '//' + hostValue + ':' + arguments[0].port + arguments[0].path;
                         for (let param in requestParams) {
                             if (urlOb.indexOf(requestParams[param]) !== -1) {
                                 urlOb= new URL(urlOb)
@@ -118,7 +121,8 @@ ssrfMonitor.prototype.http = function(Client,exports, name, version)
                                 let Judge = Client._jury.use('ssrf');
                                 if (Judge.execute(host)) {
                                     Judge.sendToJail();
-                                    // TODO: mock the return value
+                                    if (Client._config.action == 'listen') return original.apply(this, arguments);
+                                    return mockReturnedHttpRequest();
                                 }
                             }
                         }
@@ -144,14 +148,14 @@ ssrfMonitor.prototype.http = function(Client,exports, name, version)
                     if (typeof(arguments[0]) == 'string') {
                         for (let param in requestParams) {
                             if (arguments[0].indexOf(requestParams[param]) !== -1) {
-                                // add try catch
                                 let urlOb = new URL(arguments[0]);
                                 let host = urlOb.hostname || urlOb.host;
                                 
                                 let Judge = Client._jury.use('ssrf');
                                 if (Judge.execute(host)) {
                                     Judge.sendToJail();
-                                    // TODO: mock the return value
+                                    if (Client._config.action == 'listen') return original.apply(this, arguments);
+                                    return mockReturnedHttpRequest();
                                 }
                             }
                         }
@@ -169,8 +173,8 @@ ssrfMonitor.prototype.http = function(Client,exports, name, version)
                     } else if (typeof(arguments[0]) == 'object') {
                         
                         let protocol= arguments[0].protocol == 'https:' ? 'https:' : 'http:';
-                        
-                        let urlOb = protocol + '//' + arguments[0].host + ':' + arguments[0].port + arguments[0].path;
+                        let hostValue = arguments[0].hostname || arguments[0].host
+                        let urlOb = protocol + '//' + hostValue + ':' + arguments[0].port + arguments[0].path;
                         for (let param in requestParams) {
                             if (urlOb.indexOf(requestParams[param]) !== -1) {
                                 urlOb= new URL(urlOb)
@@ -179,7 +183,8 @@ ssrfMonitor.prototype.http = function(Client,exports, name, version)
                                 let Judge = Client._jury.use('ssrf');
                                 if (Judge.execute(host)) {
                                     Judge.sendToJail();
-                                    // TODO: mock the return value
+                                    if (Client._config.action == 'listen') return original.apply(this, arguments);
+                                    return mockReturnedHttpRequest();
                                 }
                             }
                         }
@@ -209,7 +214,6 @@ ssrfMonitor.prototype.http2 = function(Client,exports, name, version)
                     if (typeof(arguments[0]) == 'string') {
                         for (let param in requestParams) {
                             if (arguments[0].indexOf(requestParams[param]) !== -1) {
-                                // add try catch
                                 let urlOb = new URL(arguments[0]);
                                 let host = urlOb.hostname || urlOb.host;
                                 
@@ -238,6 +242,21 @@ ssrfMonitor.prototype.http2 = function(Client,exports, name, version)
     })
 
     return exports;
+}
+
+function mockReturnedHttpRequest () {
+    var returned = function() {
+        EventEmitter.call(this);
+        OutgoingMessage.call(this);
+    }
+
+    returned.prototype = ClientRequest.prototype;
+
+    util.inherits(returned, EventEmitter);
+    Object.setPrototypeOf(returned.prototype, OutgoingMessage.prototype);
+    Object.setPrototypeOf(returned, OutgoingMessage);
+
+    return new returned();
 }
 
 module.exports = new ssrfMonitor;
