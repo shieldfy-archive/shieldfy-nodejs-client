@@ -29,55 +29,6 @@ ssrfMonitor.prototype.run = function(Client)
 
 ssrfMonitor.prototype.http = function(Client,exports, name, version)
 {
-    Shimmer.wrap(exports, 'ClientRequest', function(original) {
-
-        var ctor = function() {
-            if (Client._currentRequest) {
-                let requestParams = Client._currentRequest.getParam();
-                if (!(Object.keys(requestParams).length === 0 && requestParams.constructor === Object)) {
-                    if (typeof(arguments[0]) == 'string') {
-                        for (let param in requestParams) {
-                                if (arguments[0].indexOf(requestParams[param]) !== -1) {
-                                let urlOb = new URL(arguments[0]);
-                                let host = urlOb.hostname || urlOb.host;
-                                
-                                let Judge = Client._jury.use('ssrf');
-                                if (Judge.execute(host)) {
-                                    Judge.sendToJail();
-                                    if (Client._config.action == 'listen') return original.apply(this, arguments);
-                                    arguments[0] = {};
-                                    return original.apply(this, arguments);
-                                }
-                            }
-                        }
-                        
-                        // TODO: refactor this
-                        // try{
-                        //     let urlOb = new URL(arguments[0]);
-                        //     let host = urlOb.hostname || urlOb.host;
-                        //     let result = SSRFJudgeFudge(host)
-                        //     Client.sendToJail('ssrf', result, );
-                            
-                        // }catch (e) {
-                            
-                        // }
-                    }
-                }
-            }
-
-            //To accomodate use of 'new'..
-            if(!this instanceof ctor){
-                return new ctor(...arguments);
-            }
-
-            return new original(...arguments)
-        }
-
-        util.inherits(ctor, original);
-
-        return ctor;
-    });
-
     Shimmer.wrap(exports, 'request', function(original) {
 
         return function () { 
@@ -100,16 +51,6 @@ ssrfMonitor.prototype.http = function(Client,exports, name, version)
                             }
                         }
 
-                        // TODO: refactor this
-                        // try{
-                        //     let urlOb = new URL(arguments[0]);
-                        //     let host = urlOb.hostname || urlOb.host;
-                        //     let result = SSRFJudgeFudge(host)
-                        //     Client.sendToJail('ssrf', result, );
-                        // }catch (e) {
-
-                        // }
-                        
                     } else if (typeof(arguments[0]) == 'object') {
                         
                         let protocol= arguments[0].protocol == 'https:' ? 'https:' : 'http:';
@@ -129,11 +70,6 @@ ssrfMonitor.prototype.http = function(Client,exports, name, version)
                                 }
                             }
                         }
-                        
-                        // TODO: refactor this
-                        // let host = urlOb.hostname || urlOb.host;
-                        // let result = SSRFJudgeFudge(host)
-                        // Client.sendToJail('ssrf', result, );
                     }
                 }
             }
@@ -163,17 +99,7 @@ ssrfMonitor.prototype.http = function(Client,exports, name, version)
                                 }
                             }
                         }
-                        
-                        // TODO: refactor this
-                        // try{
-                        //     let urlOb = new URL(arguments[0]);
-                        //     let host = urlOb.hostname || urlOb.host;
-                        //     let result = SSRFJudgeFudge(host)
-                        //     Client.sendToJail('ssrf', result, );
-                        // }catch (e) {
 
-                        // }
-                        
                     } else if (typeof(arguments[0]) == 'object') {
                         
                         let protocol= arguments[0].protocol == 'https:' ? 'https:' : 'http:';
@@ -193,11 +119,6 @@ ssrfMonitor.prototype.http = function(Client,exports, name, version)
                                 }
                             }
                         }
-
-                        // TODO: refactor this
-                        // let host = urlOb.hostname || urlOb.host;
-                        // let result = SSRFJudgeFudge(host)
-                        // Client.sendToJail('ssrf', result, );
                     }
                 }
             }
@@ -207,47 +128,5 @@ ssrfMonitor.prototype.http = function(Client,exports, name, version)
 
     return exports;
 }
-
-// disable this module because it is an experimental
-// ssrfMonitor.prototype.http2 = function(Client,exports, name, version)
-// {
-//     Shimmer.wrap(exports, 'connect', function(original) {
-
-//         return function () { 
-//             if (Client._currentRequest) {
-//                 let requestParams = Client._currentRequest.getParam();
-//                 if (!(Object.keys(requestParams).length === 0 && requestParams.constructor === Object)) {
-//                     if (typeof(arguments[0]) == 'string') {
-//                         for (let param in requestParams) {
-//                             if (arguments[0].indexOf(requestParams[param]) !== -1) {
-//                                 let urlOb = new URL(arguments[0]);
-//                                 let host = urlOb.hostname || urlOb.host;
-                                
-//                                 let Judge = Client._jury.use('ssrf');
-//                                 if (Judge.execute(host)) {
-//                                     Judge.sendToJail();
-//                                     // TODO: mock the return value
-//                                 }
-//                             }
-//                         }
-
-//                         // TODO: refactor this
-//                         // try{
-//                         //     let urlOb = new URL(arguments[0]);
-//                         //     let host = urlOb.hostname || urlOb.host;
-//                         //     let result = SSRFJudgeFudge(host)
-//                         //     Client.sendToJail('ssrf', result, );
-//                         // }catch (e) {
-                            
-//                         // }
-//                     }
-//                 }
-//             }
-//             return original.apply(this, arguments);
-//         }
-//     })
-
-//     return exports;
-// }
 
 module.exports = new ssrfMonitor;
