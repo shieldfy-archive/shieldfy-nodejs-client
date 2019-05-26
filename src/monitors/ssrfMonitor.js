@@ -45,7 +45,8 @@ ssrfMonitor.prototype.http = function(Client,exports, name, version)
                                 if (Judge.execute(host)) {
                                     Judge.sendToJail();
                                     if (Client._config.action == 'listen') return original.apply(this, arguments);
-                                    return mockReturnedHttpRequest();
+                                    arguments[0] = {};
+                                    return original.apply(this, arguments);
                                 }
                             }
                         }
@@ -93,7 +94,8 @@ ssrfMonitor.prototype.http = function(Client,exports, name, version)
                                 if (Judge.execute(host)) {
                                     Judge.sendToJail();
                                     if (Client._config.action == 'listen') return original.apply(this, arguments);
-                                    return mockReturnedHttpRequest();
+                                    arguments[0] = {};
+                                    return original.apply(this, arguments);
                                 }
                             }
                         }
@@ -122,7 +124,8 @@ ssrfMonitor.prototype.http = function(Client,exports, name, version)
                                 if (Judge.execute(host)) {
                                     Judge.sendToJail();
                                     if (Client._config.action == 'listen') return original.apply(this, arguments);
-                                    return mockReturnedHttpRequest();
+                                    arguments[0] = {};
+                                    return original.apply(this, arguments);
                                 }
                             }
                         }
@@ -155,7 +158,8 @@ ssrfMonitor.prototype.http = function(Client,exports, name, version)
                                 if (Judge.execute(host)) {
                                     Judge.sendToJail();
                                     if (Client._config.action == 'listen') return original.apply(this, arguments);
-                                    return mockReturnedHttpRequest();
+                                    arguments[0] = {};
+                                    return original.apply(this, arguments);
                                 }
                             }
                         }
@@ -184,7 +188,8 @@ ssrfMonitor.prototype.http = function(Client,exports, name, version)
                                 if (Judge.execute(host)) {
                                     Judge.sendToJail();
                                     if (Client._config.action == 'listen') return original.apply(this, arguments);
-                                    return mockReturnedHttpRequest();
+                                    arguments[0] = {};
+                                    return original.apply(this, arguments);
                                 }
                             }
                         }
@@ -244,20 +249,5 @@ ssrfMonitor.prototype.http = function(Client,exports, name, version)
 
 //     return exports;
 // }
-
-function mockReturnedHttpRequest () {
-    var returned = function() {
-        EventEmitter.call(this);
-        OutgoingMessage.call(this);
-    }
-
-    returned.prototype = ClientRequest.prototype;
-
-    util.inherits(returned, EventEmitter);
-    Object.setPrototypeOf(returned.prototype, OutgoingMessage.prototype);
-    Object.setPrototypeOf(returned, OutgoingMessage);
-
-    return new returned();
-}
 
 module.exports = new ssrfMonitor;
