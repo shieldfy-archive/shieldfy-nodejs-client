@@ -69,32 +69,66 @@ DBMonitor.prototype.mysql2 = function(Client, exports, name, version)
 }
 
 DBMonitor.prototype.mongoDB = function(Client, exports,name) {
-    // TODO: need to discuse
-    // Shimmer.massWrap(exports.Server.prototype, ['insert','update', 'remove', 'auth', 'command', 'cursor'], function(original) {
-    Shimmer.massWrap(exports.Server.prototype, ['cursor'], function(original) {
-        return function (query ,document, callback) {
+    Shimmer.wrap(exports.Server.prototype, 'cursor', function(original) {
+        return function (query, document, callback) {            
             
-            if(Client._currentRequest){
+            if (Client._currentRequest) {
                 
-                let value = JSON.stringify(document.query)
+                let value = JSON.stringify(document.query);
                 let requestParams = Client._currentRequest.getParam();
 
-                if(!(Object.keys(requestParams).length === 0 && requestParams.constructor === Object)){
+                if (!(Object.keys(requestParams).length === 0 && requestParams.constructor === Object)) {
                     
-                    for(let param in requestParams){
+                    for (let param in requestParams) {
                         
                         let paramValue = requestParams[param];
                         
-                        if(value.indexOf(paramValue) !== -1){
+                        if (value.indexOf(paramValue) !== -1) {
+                            //Matched YAY
+                            paramValue = new Normalizer(paramValue).run();
+                            
+                            let Judge = Client._jury.use('db', 'nosqli');
+                            if (Judge.execute(paramValue)) {
+                                Judge.sendToJail();
+                                if (Client._config.action == 'listen') return original.apply(this, arguments);
+                                arguments[1].query = {"null" : "null"};
+                            }
+                        }
+                    }
+                }
+            }
+            var connection = original.apply(this, arguments);            
+            return connection;
+        }
+    });
+
+    Shimmer.wrap(exports.Server.prototype, 'remove', function(original) {
+        return function (ns, ops, options, callback) {
+            
+            if (Client._currentRequest) {
+
+                if (typeof(ops[0]) != 'object' || !ops[0].q) {
+                    return original.apply(this, arguments);
+                }
+
+                let value = JSON.stringify(ops[0].q);
+                let requestParams = Client._currentRequest.getParam();
+
+                if (!(Object.keys(requestParams).length === 0 && requestParams.constructor === Object)) {
+                    
+                    for (let param in requestParams) {
+                        
+                        let paramValue = requestParams[param];
+                        
+                        if (value.indexOf(paramValue) !== -1) {
                             //Matched YAY
                             paramValue = new Normalizer(paramValue).run();
 
-                            let Judge = Client._jury.use('db','nosqli');
-                            if(Judge.execute(paramValue)){
+                            let Judge = Client._jury.use('db', 'nosqli');
+                            if (Judge.execute(paramValue)) {
                                 Judge.sendToJail();
-                                // TODO: mock the return value
-                                // return false to can continue execute the main function without return mocking value
-                                // if (Client._config.action == 'listen') return false;
+                                if (Client._config.action == 'listen') return original.apply(this, arguments);
+                                arguments[1][0].q = {"null" : "null"};
                             }
                         }
                     }
@@ -103,9 +137,8 @@ DBMonitor.prototype.mongoDB = function(Client, exports,name) {
             var connection = original.apply(this, arguments);
             return connection;
         }
-    });
+    })
 }
-
 
 function wrapQuery(Client, connection)
 {
