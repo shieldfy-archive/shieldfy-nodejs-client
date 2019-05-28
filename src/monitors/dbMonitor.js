@@ -151,7 +151,7 @@ function wrapQuery(Client, connection)
                 
                 if(!(Object.keys(requestParams).length === 0 && requestParams.constructor === Object)){
                     if (typeof sql === 'object') {
-                        // TODO: pass value to wrapQueryObject and check it's type
+                        
                         if (wrapQueryObject(sql, requestParams, Client)) return mockReturned();
 
                     }else if (typeof sql === 'string') {
@@ -241,7 +241,6 @@ function wrapExecute(Client, connection)
                                 let Judge = Client._jury.use('db','sqli');
                                 if(Judge.execute(paramValue)){
                                     Judge.sendToJail();
-                                    // return false to can continue execute the main function without return mocking value
                                     if (Client._config.action == 'listen') return original.apply(this, arguments);
                                     return mockReturned();
                                 }
